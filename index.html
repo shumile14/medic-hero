@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Medic Hero by Shumile Chishty</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Newsreader:ital,opsz,wght@0,6..72,400..600;1,6..72,400..600&display=swap" rel="stylesheet">
+<style>
+/* Layout idea: a bright film-festival poster wall. Left-aligned, widescreen "screens" for heroes,
+   2:3 posters for posts, and a centred credit roll closing every post. One theme, on purpose. */
+:root{
+  color-scheme: light;
+  --paper:#FFFFFF;
+  --wash:#F1F3FA;
+  --ink:#0F0E24;
+  --ink-soft:#55546B;
+  --line:#DDE0EC;
+  --marquee:#FFB800;
+  --cobalt:#2B3BFF;
+  --display:"Bricolage Grotesque","Arial Narrow",Arial,sans-serif;
+  --read:"Newsreader",Georgia,"Times New Roman",serif;
+  --g:var(--cobalt); --on:#fff;
+  --r-screen:22px; --r-poster:14px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--display);font-size:17px;line-height:1.45;-webkit-font-smoothing:antialiased}
+img{max-width:100%}
+a{color:inherit}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--cobalt);outline-offset:3px;border-radius:6px}
+h1,h2,h3{font-family:var(--display);font-stretch:80%;font-weight:800;line-height:.98;letter-spacing:-.02em;margin:0;text-wrap:balance}
+p{margin:0}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+
+/* preview bar */
+.preview{background:var(--ink);color:#fff;font-size:14px;padding:8px 20px;text-align:center}
+.preview b{color:var(--marquee);font-weight:700}
+
+/* nav */
+.nav{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.nav .wrap{display:flex;align-items:center;gap:18px;min-height:64px;flex-wrap:wrap;padding-top:8px;padding-bottom:8px}
+.brand{display:flex;flex-direction:column;text-decoration:none;line-height:1;margin-right:auto}
+.brand strong{font-size:26px;font-weight:800;font-stretch:78%;letter-spacing:-.03em}
+.brand span{font-family:var(--read);font-style:italic;font-size:14px;color:var(--ink-soft);margin-top:3px}
+.links{display:flex;gap:4px;flex-wrap:wrap}
+.links a{text-decoration:none;font-weight:600;padding:8px 12px;border-radius:999px}
+.links a:hover{background:var(--wash)}
+.links a[aria-current="page"]{background:var(--ink);color:#fff}
+.btn{display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:999px;background:var(--ink);color:#fff;font-weight:700;padding:13px 22px;text-decoration:none;transition:transform .15s}
+.btn:hover{transform:translateY(-2px)}
+.btn.pop{background:var(--marquee);color:var(--ink)}
+.btn.ghost{background:transparent;color:inherit;box-shadow:inset 0 0 0 2px currentColor}
+
+/* screen (widescreen hero) */
+.screen{background:var(--g);color:var(--on);border-radius:var(--r-screen);overflow:hidden;display:flex;flex-direction:column;margin-top:24px}
+.bar{background:var(--ink);color:#fff;display:flex;justify-content:space-between;gap:16px;padding:12px 24px;font-size:14px;font-weight:600}
+.bar em{font-family:var(--read);font-weight:400}
+.screen-body{position:relative;padding:clamp(28px,6vw,72px) clamp(22px,5vw,64px);display:grid;gap:22px}
+.screen h1{font-size:clamp(46px,9vw,124px);max-width:13ch}
+.screen .lede{font-family:var(--read);font-size:clamp(19px,2.2vw,24px);line-height:1.4;max-width:46ch}
+.chips{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.chip{display:inline-flex;align-items:center;border-radius:999px;padding:5px 12px;font-size:14px;font-weight:700;background:var(--ink);color:#fff}
+.chip.light{background:#fff;color:var(--ink)}
+.chip.tint{background:var(--g);color:var(--on)}
+.actions{display:flex;gap:12px;flex-wrap:wrap}
+.ghost-num{position:absolute;right:-10px;bottom:-60px;font-size:clamp(200px,34vw,460px);font-weight:800;font-stretch:75%;line-height:.8;opacity:.16;pointer-events:none;user-select:none}
+@media (prefers-reduced-motion:no-preference){
+  .screen.play .bar:first-child{animation:barIn .7s cubic-bezier(.2,.8,.2,1) both}
+  .screen.play .bar:last-child{animation:barUp .7s cubic-bezier(.2,.8,.2,1) both}
+  .screen.play h1{animation:rise .8s .15s cubic-bezier(.2,.8,.2,1) both}
+}
+@keyframes barIn{from{transform:translateY(-100%)}}
+@keyframes barUp{from{transform:translateY(100%)}}
+@keyframes rise{from{transform:translateY(26px)}}
+
+/* sections */
+section{padding:56px 0 0}
+.head{display:flex;align-items:end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:22px}
+.head h2{font-size:clamp(34px,5vw,58px)}
+.head p{font-family:var(--read);font-size:19px;color:var(--ink-soft);max-width:44ch}
+
+/* now strip */
+.now{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}
+.now div{background:var(--wash);border-radius:16px;padding:18px 20px}
+.now dt{font-size:14px;font-weight:700;color:var(--ink-soft)}
+.now dd{margin:6px 0 0;font-size:21px;font-weight:700;font-stretch:85%;line-height:1.15}
+
+/* genre filter */
+.filter{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px}
+.filter button{border:2px solid var(--ink);background:#fff;border-radius:999px;padding:7px 15px;font-weight:700;font-size:15px;display:inline-flex;gap:8px;align-items:center}
+.filter button i{width:11px;height:11px;border-radius:50%;background:var(--g);display:block;box-shadow:0 0 0 1.5px var(--ink)}
+.filter button[aria-pressed="true"]{background:var(--ink);color:#fff}
+
+/* poster wall */
+.wall{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:18px}
+.poster{position:relative;aspect-ratio:2/3;border-radius:var(--r-poster);background:var(--g);color:var(--on);text-decoration:none;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;padding:16px;transition:transform .2s, box-shadow .2s}
+.poster:hover{transform:translateY(-6px) rotate(-.6deg);box-shadow:0 18px 0 -8px var(--ink)}
+.poster svg,.poster .glyph{position:absolute;inset:14% 8% auto 8%;width:84%;height:48%;pointer-events:none}
+.poster .glyph{display:grid;place-items:center;font-size:190px;font-weight:800;font-stretch:75%;line-height:1;opacity:.9}
+.poster .top{position:relative;display:flex;justify-content:space-between;gap:8px;font-size:14px;font-weight:700}
+.poster .bottom{position:relative}
+.poster h3{font-size:clamp(26px,2.6vw,32px);margin-bottom:8px}
+.poster small{font-family:var(--read);font-style:italic;font-size:15px}
+.empty{grid-column:1/-1;background:var(--wash);border-radius:16px;padding:32px;font-family:var(--read);font-size:20px}
+
+/* trackers */
+.tracks{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.track{border:2px solid var(--ink);border-radius:16px;padding:20px}
+.track h3{font-size:24px;margin-bottom:6px}
+.track p{font-family:var(--read);color:var(--ink-soft);font-size:17px;min-height:2.8em}
+.meter{height:14px;border-radius:999px;background:var(--wash);overflow:hidden;margin:14px 0 8px}
+.meter b{display:block;height:100%;background:var(--g);border-radius:999px}
+.track .fig{font-weight:800;font-size:18px;font-variant-numeric:tabular-nums}
+
+/* shelf (shop) */
+.shelf{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:22px}
+.book{display:flex;flex-direction:column;gap:12px}
+.cover{aspect-ratio:3/4;border-radius:6px 14px 14px 6px;background:var(--g);color:var(--on);padding:22px 20px 20px 30px;display:flex;flex-direction:column;justify-content:space-between;position:relative;box-shadow:10px 10px 0 var(--ink)}
+.cover::before{content:"";position:absolute;left:12px;top:0;bottom:0;width:3px;background:rgba(15,14,36,.28)}
+.cover h3{font-size:34px}
+.cover span{font-weight:700;font-size:14px}
+.book p{font-family:var(--read);font-size:17px;color:var(--ink-soft)}
+.book .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:6px}
+
+/* watch */
+.reel{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px}
+.vid{text-decoration:none;display:flex;flex-direction:column;gap:10px}
+.vid .thumb{aspect-ratio:16/9;border-radius:14px;background:var(--g);color:var(--on);position:relative;display:flex;align-items:flex-end;padding:16px;overflow:hidden}
+.vid .thumb::after{content:"";position:absolute;right:16px;top:16px;width:46px;height:46px;border-radius:50%;background:var(--ink) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23fff' d='M9 6.5v11l9-5.5z'/%3E%3C/svg%3E") center/26px no-repeat}
+.vid .thumb h3{font-size:30px;max-width:12ch}
+.vid p{font-family:var(--read);color:var(--ink-soft);font-size:17px}
+
+/* post */
+.titlecard h1{font-size:clamp(44px,8vw,112px);max-width:15ch}
+.scenes{max-width:760px;margin:0 auto;padding:44px 20px 0;display:grid;gap:30px}
+.scenes p{font-family:var(--read);font-size:21px;line-height:1.6}
+.scenes p:first-child::first-letter{font-family:var(--display);font-weight:800;font-size:3.4em;float:left;line-height:.8;padding:6px 10px 0 0;color:var(--g)}
+.frame{aspect-ratio:21/9;border-radius:14px;background:repeating-linear-gradient(135deg,var(--wash) 0 18px,#fff 18px 36px);border:2px dashed var(--ink);display:grid;place-items:center;text-align:center;padding:16px;margin:0 -40px}
+.frame span{background:var(--ink);color:#fff;border-radius:999px;padding:6px 14px;font-size:14px;font-weight:700}
+.quote{font-size:clamp(32px,5vw,54px);font-weight:800;font-stretch:80%;line-height:1.02;letter-spacing:-.02em;border-left:10px solid var(--g);padding-left:20px;text-wrap:balance}
+.card{border:2px solid var(--ink);border-radius:16px;padding:22px;display:grid;gap:14px}
+.card h3{font-size:26px}
+.score{display:grid;grid-template-columns:110px 1fr 44px;gap:12px;align-items:center;font-weight:700}
+.score .meter{margin:0}
+.score output{text-align:right;font-variant-numeric:tabular-nums}
+.verdict{display:flex;justify-content:space-between;align-items:baseline;border-top:2px solid var(--ink);padding-top:14px;font-weight:800;font-size:22px}
+.verdict b{font-size:44px;font-stretch:78%}
+.notes{display:grid;gap:8px}
+.notes div{border-radius:12px;padding:14px 18px;background:var(--g);color:var(--on);display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;font-weight:700}
+.notes div:nth-child(1){width:60%;opacity:.55}.notes div:nth-child(2){width:80%;opacity:.78}.notes div:nth-child(3){width:100%}
+.notes span{font-family:var(--read);font-weight:400;font-style:italic}
+.credits{background:var(--ink);color:#fff;margin-top:56px;padding:56px 20px;text-align:center}
+.credits h2{font-size:22px;font-stretch:100%;font-weight:600;letter-spacing:0;color:var(--marquee);margin-bottom:26px}
+.credits dl{display:grid;grid-template-columns:1fr 1fr;gap:12px 18px;max-width:560px;margin:0 auto 34px;font-size:19px}
+.credits dt{text-align:right;color:#B9B8CC;font-family:var(--read);font-style:italic}
+.credits dd{margin:0;text-align:left;font-weight:700}
+.next{display:inline-flex;flex-direction:column;gap:6px;text-decoration:none;background:var(--g);color:var(--on);border-radius:16px;padding:18px 26px;text-align:left;max-width:100%}
+.next span{font-size:14px;font-weight:700}
+.next strong{font-size:28px;font-stretch:80%;line-height:1}
+
+/* about / contact */
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:36px;align-items:start}
+.prose{display:grid;gap:18px}
+.prose p{font-family:var(--read);font-size:21px;line-height:1.55;max-width:60ch}
+.ventures{display:grid;gap:10px}
+.ventures a,.ventures div{display:grid;gap:2px;border:2px solid var(--ink);border-radius:14px;padding:14px 18px;text-decoration:none}
+.ventures b{font-size:21px;font-stretch:82%}
+.ventures span{font-family:var(--read);color:var(--ink-soft)}
+.badges{display:flex;gap:8px;flex-wrap:wrap}
+form{display:grid;gap:14px}
+label{font-weight:700;display:grid;gap:6px}
+input,textarea,select{font:inherit;border:2px solid var(--ink);border-radius:12px;padding:12px 14px;background:#fff;color:var(--ink);width:100%}
+textarea{min-height:140px;resize:vertical}
+.msg{font-family:var(--read);font-size:18px;min-height:1.4em}
+.mail{font-size:clamp(20px,3.4vw,34px);font-weight:800;font-stretch:80%;overflow-wrap:anywhere}
+
+/* footer + subscribe */
+footer{margin-top:72px;background:var(--marquee);color:var(--ink)}
+.sub{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;align-items:center;padding:48px 20px}
+.sub h2{font-size:clamp(36px,5.4vw,64px)}
+.sub p{font-family:var(--read);font-size:19px;margin-top:10px;max-width:40ch}
+.sub form{grid-template-columns:1fr auto;align-items:start}
+.sub .msg{grid-column:1/-1}
+.foot{border-top:2px solid var(--ink);padding:18px 20px;display:flex;gap:16px;justify-content:space-between;flex-wrap:wrap;font-weight:600;font-size:15px}
+@media (max-width:820px){.frame{margin:0}.sub form{grid-template-columns:1fr}.score{grid-template-columns:86px 1fr 38px}.poster .glyph{font-size:150px}}
+</style>
+</head>
+<body>
+<div class="preview"><b>Preview build.</b> Posts, book details and videos are samples until Shumile adds his own.</div>
+<header class="nav"><div class="wrap">
+  <a class="brand" href="#home"><strong>Medic Hero</strong><span>by Shumile Chishty</span></a>
+  <nav class="links" aria-label="Main">
+    <a href="#home" data-nav="home">Home</a>
+    <a href="#blog" data-nav="blog">Episodes</a>
+    <a href="#shop" data-nav="shop">E-books</a>
+    <a href="#watch" data-nav="watch">Watch</a>
+    <a href="#about" data-nav="about">About</a>
+    <a href="#contact" data-nav="contact">Contact</a>
+  </nav>
+  <a class="btn pop" href="#subscribe" data-sub>Subscribe</a>
+</div></header>
+
+<main id="view"></main>
+
+<footer>
+  <div class="wrap sub" id="subscribe">
+    <div><h2>A new episode every week.</h2><p>Medicine, travel, business, fragrance and whatever mad thing happened in between. One email when it drops.</p></div>
+    <form id="subForm">
+      <label for="subEmail" style="grid-column:1/-1">Your email</label>
+      <input id="subEmail" type="email" placeholder="you@example.com" required>
+      <button class="btn" type="submit">Subscribe</button>
+      <p class="msg" id="subMsg" role="status"></p>
+    </form>
+  </div>
+  <div class="wrap foot"><span>Medic Hero, written and filmed by Shumile Chishty</span><span>Season 1, 2026</span></div>
+</footer>
+
+<script>
+const CHANNEL_URL = "https://www.youtube.com/results?search_query=Medic+Hero"; // swap for the real channel link
+const EMAIL = "officialmedichero@gmail.com";
+
+const G = {
+  episode:{name:"Weekly Episode",c:"#2B3BFF",on:"#FFFFFF"},
+  medicine:{name:"Medicine",c:"#FF3B4E",on:"#FFFFFF"},
+  travel:{name:"Travel",c:"#00A6E0",on:"#0F0E24"},
+  reviews:{name:"Reviews",c:"#FFB800",on:"#0F0E24"},
+  fragrance:{name:"Fragrance",c:"#8D4BFF",on:"#FFFFFF"},
+  unique:{name:"The Unique Ting",c:"#FF4FA3",on:"#0F0E24"},
+  business:{name:"Business",c:"#00B877",on:"#0F0E24"},
+  languages:{name:"Languages",c:"#B6E000",on:"#0F0E24"},
+  magic:{name:"Magic",c:"#0F0E24",on:"#FFB800"},
+  art:{name:"Art",c:"#FF7A1A",on:"#0F0E24"},
+  photography:{name:"Photography",c:"#D9DEE8",on:"#0F0E24"},
+  videography:{name:"Videography",c:"#C4102F",on:"#FFFFFF"}
+};
+
+const POSTS = [
+ {id:"s1e3",genre:"episode",ep:3,title:"The week I started writing again",date:"9 Nov 2026",mins:5,
+  blurb:"Why I'm bringing the blog back, and what this place is going to be.",
+  credits:{Location:"Lincoln",Wearing:"A dark oud, two sprays",Listening:"Rain on the taxi window",Mood:"Locked in"},
+  scenes:[
+   {p:"Before everyone picked up a camera, people wrote. They wrote about their day, their trips, the hotel that let them down and the meal that didn't. Then vlogging turned up and the writing went quiet. I miss it, so I'm bringing it back my way."},
+   {p:"This site is a series you read. Every week there's a new episode about where I'm at: final-year medicine, the businesses, the languages, the cameras, and whatever I tried for the first time that week."},
+   {frame:"You at your desk, laptop open, late"},
+   {quote:"A vlog shows you what happened. A blog tells you what it felt like."},
+   {p:"Between the episodes you'll find the other genres. A day in medicine. A hotel scored like a film. A perfume broken down note by note. Pick whatever colour catches your eye on the wall."},
+   {p:"Every post ends with credits: where I was, what I was wearing, what was playing. Small things, but they're how I remember a week."}
+  ]},
+ {id:"trauma-5am",genre:"medicine",title:"5am, major trauma, and the quiet before the bleep",date:"6 Nov 2026",mins:6,
+  blurb:"A day in medicine, from the alarm to the handover.",
+  credits:{Location:"Major trauma, on placement",Wearing:"Something clean and light",Listening:"Nothing. Just the corridor",Mood:"Awake, somehow"},
+  scenes:[
+   {p:"The alarm goes at five. Nobody tells you that the hardest part of medicine some days is the hour before it starts: the dark, the cold, the taxi, the coffee you don't finish."},
+   {p:"Then you walk onto the unit and all of that drops away. Handover is fast. Names, injuries, plans. You learn to listen properly, because the next ten hours are built on those five minutes."},
+   {frame:"Empty hospital corridor at dawn"},
+   {quote:"Trauma is loud for five minutes and careful for five hours."},
+   {p:"What I'm learning this year is that the dramatic part is tiny. Most of the work is checking, rechecking, and noticing the one thing that changed. That's the job I want."}
+  ]},
+ {id:"oud-on-the-ward",genre:"fragrance",title:"Oud on a ward round: what I wear and why",date:"4 Nov 2026",mins:4,
+  blurb:"A fragrance review, laid out note by note.",
+  credits:{Location:"Home, then the ward",Wearing:"The one in this review",Listening:"A slow oud instrumental",Mood:"Calm"},
+  scenes:[
+   {p:"I love perfume the way some people love trainers. Oud most of all: deep, woody, a little smoky. The trick is wearing it somewhere like a hospital, where loud scents are a bad idea."},
+   {notes:{name:"Sample scent profile",top:"Saffron, a touch of citrus",heart:"Rose, warm spice",base:"Oud, amber, soft musk"}},
+   {p:"On a clinical day it's one spray, under the collar, an hour before I leave. By the time I'm on the ward it has settled into something only I notice."},
+   {score:{title:"Scorecard",rows:[["Scent",9],["Lasting",8],["Ward-safe",7],["Value",6]],overall:"7.5"}},
+   {quote:"The best perfume on a ward is the one nobody can point at."}
+  ]},
+ {id:"hotel-scored",genre:"reviews",title:"A hotel, scored like a film",date:"1 Nov 2026",mins:4,
+  blurb:"How every hotel and place review on here will work.",
+  credits:{Location:"Room 214, somewhere with thin curtains",Wearing:"Travel bottle of oud",Listening:"The lift, all night",Mood:"Fair but firm"},
+  scenes:[
+   {p:"I stay in a lot of rooms for placement and travel, so I'm going to start scoring them. Same four things every time, so you can compare one stay with the next."},
+   {score:{title:"Sample stay",rows:[["Room",7],["Service",8],["Food",5],["Value",6]],overall:"6.5"}},
+   {frame:"The room, shot from the doorway"},
+   {p:"Room is about sleep: the bed, the noise, the blackout. Service is how they treat you when something goes wrong. Food is breakfast, mostly. Value is whether I'd pay for it again with my own money."},
+   {quote:"A good hotel is one you stop noticing by the second night."}
+  ]},
+ {id:"stack-method-four-down",genre:"business",title:"Four books made, two to go",date:"30 Oct 2026",mins:5,
+  blurb:"Building the Stack Method language books, in public.",
+  credits:{Location:"Laptop, wherever there's a plug",Wearing:"Whatever was nearest",Listening:"The same playlist on loop",Mood:"Building"},
+  scenes:[
+   {p:"The Stack Method started with one question: why do people study a language for years and still freeze when they have to speak? Most books hand you words in random order. Ours stacks them, so every chapter lets you say more than the last."},
+   {p:"Spanish, Urdu and both Arabic books are done. French and German are next. Each one is the thousand words people use the most, in small chapters you can finish in a night."},
+   {frame:"The book covers, side by side"},
+   {quote:"Don't learn more words. Learn the next word you can use."},
+   {p:"I'll keep posting the numbers here as it grows: what worked, what flopped, what I'd do differently."}
+  ]},
+ {id:"arabic-from-dramas",genre:"languages",title:"Learning Levantine Arabic from TV dramas",date:"28 Oct 2026",mins:4,
+  blurb:"One year, one dialect, a lot of subtitles.",
+  credits:{Location:"Sofa",Wearing:"Nothing fancy",Listening:"Episode 14, no skipping the intro",Mood:"Yalla"},
+  scenes:[
+   {p:"I can read Arabic. Speaking it is another thing. So I've given myself a year to hold a real conversation in Levantine, the dialect you hear across Syria, Lebanon, Jordan and Palestine."},
+   {p:"My method is simple. I watch dramas, catch the phrases people say again and again, and steal them. Whole phrases, because that's how people talk."},
+   {quote:"Shu akhbarak? Start there. Everything else follows."},
+   {frame:"Notebook page of phrases"},
+   {p:"I'll post a check-in every month so you can hear the difference."}
+  ]},
+ {id:"four-countries",genre:"travel",title:"UK, Spain, Egypt, UAE: the documentary I'm planning",date:"26 Oct 2026",mins:5,
+  blurb:"Four weeks, four countries, one question about medicine.",
+  credits:{Location:"A map on my wall",Wearing:"Airport oud",Listening:"Departure boards",Mood:"Restless"},
+  scenes:[
+   {p:"I want to make a travel documentary about how lives get saved in different places. Four weeks, starting at home, then Spain, Egypt and the UAE."},
+   {p:"Surgery, paramedics, emergency care. I want to shadow the people doing it and ask them the same questions in every country, then put the answers side by side."},
+   {frame:"The route drawn on a map"},
+   {quote:"Same emergency. Four countries. What changes?"},
+   {p:"The planning lives here until the cameras roll. When they do, the films go on the Watch page and the stories behind them go here."}
+  ]},
+ {id:"card-trick",genre:"unique",title:"I learned one card trick properly",date:"24 Oct 2026",mins:3,
+  blurb:"The unique thing I did this week.",
+  credits:{Location:"Bedroom mirror",Wearing:"None",Listening:"Cards hitting the floor",Mood:"Stubborn"},
+  scenes:[
+   {p:"Every week I try one thing I've never done, or never done properly. This week it was a single card trick, practised until my hands stopped giving it away."},
+   {quote:"Magic is ninety percent where you make them look."},
+   {p:"It turns out a trick is a good way to break the ice with anyone, any age, in about thirty seconds. That's a useful thing for a doctor to have in his pocket."}
+  ]},
+ {id:"s1e2",genre:"episode",ep:2,title:"Too many tabs open",date:"2 Nov 2026",mins:4,
+  blurb:"Placement, businesses, a language and a camera. How I keep it moving.",
+  credits:{Location:"Lincoln",Wearing:"Rose and oud",Listening:"Lo-fi, low volume",Mood:"Busy"},
+  scenes:[
+   {p:"People ask how I fit it all in. Honest answer: some weeks I don't. This was one of those weeks, and I'd rather tell you that than pretend."},
+   {quote:"You can do a lot of things. You can't do them all on a Tuesday."},
+   {p:"What helps is giving each thing its own day and letting the rest wait. Medicine comes first. Everything else takes turns."}
+  ]},
+ {id:"s1e1",genre:"episode",ep:1,title:"Pilot",date:"26 Oct 2026",mins:3,
+  blurb:"Who I am and why this exists.",
+  credits:{Location:"Sheffield, where it started",Wearing:"The first oud I ever bought",Listening:"The house, asleep",Mood:"Ready"},
+  scenes:[
+   {p:"I'm Shumile. I'm a final-year medical student, I build businesses, I write, I film, and I'm curious about nearly everything. This is the first episode of a series about all of it."},
+   {quote:"Season one starts now."},
+   {p:"New episode every week. Pull up a chair."}
+  ]}
+];
+
+const BOOKS = [
+ {genre:"medicine",title:"UKMLA: the big revision guide",tag:"PDF e-book",text:"The conditions that come up most, set out the way they're asked."},
+ {genre:"episode",title:"ECG made easy",tag:"PDF e-book",text:"Read any ECG in a set order, from rate and rhythm to the subtle stuff."},
+ {genre:"fragrance",title:"O&G in a week",tag:"PDF e-book",text:"Obstetrics and gynaecology for finals, one topic a day."},
+ {genre:"business",title:"PSA pass notes",tag:"PDF e-book",text:"Prescribing Safety Assessment: the question types and how to tackle each one."}
+];
+
+const VIDEOS = [
+ {genre:"travel",title:"Four countries, one emergency",state:"In planning",text:"The travel documentary: UK, Spain, Egypt and the UAE."},
+ {genre:"medicine",title:"The Weight of Life",state:"Short film",text:"A two-minute film from my obstetrics and gynaecology placement."},
+ {genre:"videography",title:"Cardiac arrest",state:"In planning",text:"A cinematic short about the first minutes that matter."},
+ {genre:"episode",title:"Day in the life",state:"Series",text:"Final-year medicine, start to finish."}
+];
+
+const TRACKS = [
+ {genre:"languages",title:"Levantine Arabic",text:"One-year speaking goal, started October 2026.",now:2,of:12,unit:"months"},
+ {genre:"business",title:"Stack Method books",text:"Spanish, Urdu and two Arabic dialects done. French and German next.",now:4,of:6,unit:"books"},
+ {genre:"medicine",title:"UKMLA revision",text:"Sample figure. Swap in your real progress.",now:40,of:100,unit:"percent"}
+];
+
+const $ = s => document.querySelector(s);
+const view = $("#view");
+const style = g => `--g:${G[g].c};--on:${G[g].on}`;
+const epLabel = p => p.ep ? `Season 1, Episode ${p.ep}` : G[p.genre].name;
+
+function motif(p){
+  const s = `fill="none" stroke="currentColor" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"`;
+  const svg = inner => `<svg viewBox="0 0 300 220" aria-hidden="true">${inner}</svg>`;
+  switch(p.genre){
+    case "episode": return `<div class="glyph" aria-hidden="true">${p.ep}</div>`;
+    case "medicine": return svg(`<polyline ${s} points="0,120 70,120 92,92 112,150 134,24 156,196 176,120 214,120 232,98 248,120 300,120"/>`);
+    case "travel": return svg(`<circle cx="150" cy="96" r="62" fill="currentColor"/><path ${s} d="M20 180h260M60 206h180"/>`);
+    case "fragrance": return svg(`<rect ${s} x="96" y="84" width="108" height="124" rx="16"/><rect x="128" y="50" width="44" height="34" fill="currentColor"/><rect x="118" y="18" width="64" height="32" rx="6" fill="currentColor"/><path ${s} d="M120 150h60"/>`);
+    case "reviews": return svg(`<path fill="currentColor" d="M150 10l36 74 82 12-59 58 14 81-73-39-73 39 14-81-59-58 82-12z"/>`);
+    case "unique": return svg(Array.from({length:12},(_,i)=>{const a=i*Math.PI/6;return `<path ${s} d="M${150+34*Math.cos(a)} ${110+34*Math.sin(a)}L${150+100*Math.cos(a)} ${110+100*Math.sin(a)}"/>`}).join(""));
+    case "business": return svg(`<rect x="34" y="150" width="52" height="60" fill="currentColor"/><rect x="96" y="110" width="52" height="100" fill="currentColor"/><rect x="158" y="66" width="52" height="144" fill="currentColor"/><rect x="220" y="16" width="52" height="194" fill="currentColor"/>`);
+    case "languages": return `<div class="glyph" aria-hidden="true" lang="ar">ع</div>`;
+    case "magic": return `<div class="glyph" aria-hidden="true">♠</div>`;
+    default: return svg(`<circle ${s} cx="150" cy="110" r="80"/>`);
+  }
+}
+
+const poster = p => `<a class="poster" href="#post-${p.id}" style="${style(p.genre)}">
+  <div class="top"><span>${p.ep ? "S1 E"+p.ep : G[p.genre].name}</span><span>${p.mins} min</span></div>
+  ${motif(p)}
+  <div class="bottom"><h3>${p.title}</h3><small>${p.blurb}</small></div></a>`;
+
+function wall(filter){
+  const list = POSTS.filter(p => !filter || p.genre===filter);
+  return list.length ? list.map(poster).join("") :
+    `<p class="empty">Nothing in ${G[filter].name} yet. The first one is on its way.</p>`;
+}
+function filterBar(active){
+  return `<div class="filter" role="group" aria-label="Filter by genre">
+    <button type="button" data-f="" aria-pressed="${!active}">Everything</button>
+    ${Object.entries(G).map(([k,g])=>`<button type="button" data-f="${k}" aria-pressed="${active===k}" style="--g:${g.c}"><i></i>${g.name}</button>`).join("")}
+  </div>`;
+}
+function wallSection(title, sub){
+  return `<section class="wrap"><div class="head"><h2>${title}</h2><p>${sub}</p></div>
+    <div id="filterHost">${filterBar("")}</div><div class="wall" id="wall">${wall("")}</div></section>`;
+}
+
+const pages = {
+  home(){
+    const p = POSTS[0];
+    return `<div class="wrap">
+      <div class="screen play" style="${style(p.genre)}">
+        <div class="bar"><span>Medic Hero presents</span><em>${epLabel(p)}</em></div>
+        <div class="screen-body">
+          <div class="ghost-num" aria-hidden="true">${p.ep}</div>
+          <div class="chips"><span class="chip light">Now showing</span><span class="chip">${p.mins} min read</span></div>
+          <h1>${p.title}</h1>
+          <p class="lede">${p.blurb} A weekly series about medicine, business, travel and everything in between, written by Shumile Chishty.</p>
+          <div class="actions"><a class="btn pop" href="#post-${p.id}">Read this episode</a><a class="btn ghost" href="#blog">See every episode</a></div>
+        </div>
+        <div class="bar"><span>${p.date}</span><em>A blog you read like a film</em></div>
+      </div></div>
+      <section class="wrap"><div class="head"><h2>Right now</h2><p>What I'm on this week.</p></div>
+        <dl class="now">
+          <div><dt>Studying</dt><dd>Final-year medicine, UKMLA on the way</dd></div>
+          <div><dt>Learning</dt><dd>Levantine Arabic, month two</dd></div>
+          <div><dt>Building</dt><dd>French and German Stack Method books</dd></div>
+          <div><dt>Wearing</dt><dd>A dark oud, two sprays</dd></div>
+        </dl></section>
+      ${wallSection("The poster wall","Every post is a poster. Pick a genre, or just pick a colour.")}
+      <section class="wrap"><div class="head"><h2>Progress</h2><p>I said I'd do these things. Here's where they're at.</p></div>
+        <div class="tracks">${TRACKS.map(t=>`<div class="track" style="${style(t.genre)}"><h3>${t.title}</h3><p>${t.text}</p>
+          <div class="meter" role="img" aria-label="${t.now} of ${t.of} ${t.unit}"><b style="width:${t.now/t.of*100}%"></b></div>
+          <span class="fig">${t.unit==="percent" ? t.now+"%" : t.now+" of "+t.of+" "+t.unit}</span></div>`).join("")}</div></section>
+      <section class="wrap"><div class="head"><h2>From the bookshelf</h2><p>Revision e-books I'm writing for medical students.</p><a class="btn" href="#shop">See all e-books</a></div>
+        <div class="shelf">${BOOKS.slice(0,3).map(book).join("")}</div></section>`;
+  },
+  blog(){
+    return `<div class="wrap"><div class="screen" style="--g:#0F0E24;--on:#fff"><div class="screen-body">
+      <div class="chips"><span class="chip tint" style="--g:#FFB800;--on:#0F0E24">Season 1</span><span class="chip light">${POSTS.length} posts</span></div>
+      <h1>Every episode</h1><p class="lede">The weekly episodes, plus days in medicine, reviews, fragrance, business and the one unique thing I did that week.</p>
+    </div></div></div>${wallSection("Browse by genre","Each genre has its own colour, so you always know what you're walking into.")}`;
+  },
+  shop(){
+    return `<div class="wrap"><div class="screen" style="${style("reviews")}"><div class="screen-body">
+      <div class="chips"><span class="chip">PDF e-books</span></div>
+      <h1>The bookshelf</h1><p class="lede">Revision guides written by a final-year medical student, for the exams I'm sitting too. Instant PDF download once they're out.</p>
+    </div></div></div>
+    <section class="wrap"><div class="shelf">${BOOKS.map(book).join("")}</div></section>`;
+  },
+  watch(){
+    return `<div class="wrap"><div class="screen" style="${style("videography")}"><div class="screen-body">
+      <div class="chips"><span class="chip light">YouTube</span></div>
+      <h1>Watch Medic Hero</h1><p class="lede">Films, documentaries and days in the life. Every video lives on the channel, and each one gets its story told here.</p>
+      <div class="actions"><a class="btn pop" href="${CHANNEL_URL}" target="_blank" rel="noopener">Open the YouTube channel</a></div>
+    </div></div></div>
+    <section class="wrap"><div class="head"><h2>On the slate</h2><p>What's out and what's being made.</p></div>
+      <div class="reel">${VIDEOS.map(v=>`<a class="vid" href="${CHANNEL_URL}" target="_blank" rel="noopener" style="${style(v.genre)}">
+        <div class="thumb"><h3>${v.title}</h3></div>
+        <div class="chips"><span class="chip">${v.state}</span></div><p>${v.text}</p></a>`).join("")}</div></section>`;
+  },
+  about(){
+    return `<div class="wrap"><div class="screen" style="${style("unique")}"><div class="screen-body">
+      <div class="chips"><span class="chip">The cast</span></div>
+      <h1>Shumile Chishty</h1><p class="lede">Final-year medical student, founder, writer and filmmaker. Born in Sheffield, based in Lincoln.</p>
+    </div></div></div>
+    <section class="wrap two">
+      <div class="prose">
+        <h2 style="font-size:40px">The short version</h2>
+        <p>I'm in my final year of medicine at the University of Nottingham's Lincoln Medical School, heading for a career in major trauma. I founded our Emergency Medicine Society and I coordinate a Community First Responder scheme in Lincoln with LIVES and East Midlands Ambulance Service.</p>
+        <p>Outside the hospital I build things. Medic Hero is where I film and write. I also run a scrubs brand, a language-book company and a few other ideas that started as notes on my phone.</p>
+        <p>I speak Urdu, I'm learning Levantine Arabic, I collect fragrances, and I'll try nearly anything once: magic, art, photography, a new country.</p>
+        <div class="badges"><span class="chip">Witty Scholar</span><span class="chip">Ingenuity Impact winner</span><span class="chip">Growth Champion of the Year</span></div>
+      </div>
+      <div class="prose">
+        <h2 style="font-size:40px">The businesses</h2>
+        <div class="ventures">
+          <a href="https://axxonscrubs.store" target="_blank" rel="noopener"><b>Axxon Scrubs</b><span>UK medical apparel</span></a>
+          <div><b>The Stack Method</b><span>Language books built on the 1,000 words people use most</span></div>
+          <div><b>Axxon Health</b><span>Health technology</span></div>
+          <div><b>Wondrop</b><span>Gadgets and tools for students</span></div>
+          <div><b>Medic Hero</b><span>This site, and the YouTube channel</span></div>
+        </div>
+      </div>
+    </section>`;
+  },
+  contact(){
+    return `<div class="wrap"><div class="screen" style="${style("travel")}"><div class="screen-body">
+      <div class="chips"><span class="chip">Get in touch</span></div>
+      <h1>Say hello</h1><p class="lede">Collabs, sponsorships, speaking, or a question about medicine. I read everything.</p>
+    </div></div></div>
+    <section class="wrap two">
+      <div class="prose"><h2 style="font-size:40px">Email me</h2><p class="mail">${EMAIL}</p>
+        <p>Brands and sponsors: tell me what you're making and who it's for. Students: ask away.</p></div>
+      <form id="contactForm">
+        <label for="cName">Your name<input id="cName" required></label>
+        <label for="cWhy">What's it about?<select id="cWhy"><option>Collab or sponsorship</option><option>Speaking or teaching</option><option>E-books</option><option>Just saying hello</option></select></label>
+        <label for="cMsg">Message<textarea id="cMsg" required></textarea></label>
+        <button class="btn" type="submit">Open in my email app</button>
+        <p class="msg" id="cOut" role="status"></p>
+      </form>
+    </section>`;
+  }
+};
+
+function book(b){
+  return `<div class="book"><div class="cover" style="${style(b.genre)}"><span>${b.tag}</span><h3>${b.title}</h3><span>Shumile Chishty</span></div>
+    <p>${b.text}</p><div class="row"><span class="chip">Coming soon</span><a class="btn ghost" href="#subscribe" data-sub style="padding:8px 16px">Tell me when it's out</a></div></div>`;
+}
+
+function scene(s){
+  if(s.p) return `<p>${s.p}</p>`;
+  if(s.quote) return `<blockquote class="quote" style="margin:0">${s.quote}</blockquote>`;
+  if(s.frame) return `<div class="frame"><span>Photo slot: ${s.frame}</span></div>`;
+  if(s.score) return `<div class="card"><h3>${s.score.title}</h3>${s.score.rows.map(([k,v])=>`<div class="score"><span>${k}</span><div class="meter"><b style="width:${v*10}%"></b></div><output>${v}/10</output></div>`).join("")}
+    <div class="verdict"><span>Overall</span><b>${s.score.overall}</b></div></div>`;
+  if(s.notes) return `<div class="card"><h3>${s.notes.name}</h3><div class="notes">
+    <div>Top <span>${s.notes.top}</span></div><div>Heart <span>${s.notes.heart}</span></div><div>Base <span>${s.notes.base}</span></div></div></div>`;
+  return "";
+}
+
+function postPage(id){
+  const i = POSTS.findIndex(p=>p.id===id); if(i<0) return pages.blog();
+  const p = POSTS[i], next = POSTS[(i+1)%POSTS.length];
+  return `<article style="${style(p.genre)}">
+    <div class="wrap"><div class="screen titlecard play">
+      <div class="bar"><span>Medic Hero presents</span><em>${epLabel(p)}</em></div>
+      <div class="screen-body">
+        ${p.ep?`<div class="ghost-num" aria-hidden="true">${p.ep}</div>`:""}
+        <div class="chips"><span class="chip light">${G[p.genre].name}</span><span class="chip">Running time ${p.mins} min</span><span class="chip">${p.date}</span></div>
+        <h1>${p.title}</h1><p class="lede">${p.blurb}</p>
+      </div>
+      <div class="bar"><span>Written by Shumile Chishty</span><em>Scroll to play</em></div>
+    </div></div>
+    <div class="scenes">${p.scenes.map(scene).join("")}</div>
+    <div class="credits"><h2>Credits</h2>
+      <dl>${Object.entries(p.credits).map(([k,v])=>`<dt>${k==="Listening"?"Listening to":k}</dt><dd>${v}</dd>`).join("")}<dt>Written by</dt><dd>Shumile Chishty</dd></dl>
+      <a class="next" href="#post-${next.id}" style="${style(next.genre)}"><span>Up next, ${epLabel(next)}</span><strong>${next.title}</strong></a>
+    </div></article>`;
+}
+
+function render(){
+  const h = (location.hash||"#home").slice(1);
+  if(h==="subscribe"){ if(!view.innerHTML) view.innerHTML = pages.home(); focusSub(); return; }
+  const isPost = h.startsWith("post-");
+  const name = isPost ? "blog" : (pages[h] ? h : "home");
+  view.innerHTML = isPost ? postPage(h.slice(5)) : pages[name]();
+  document.querySelectorAll("[data-nav]").forEach(a => a.dataset.nav===name ? a.setAttribute("aria-current","page") : a.removeAttribute("aria-current"));
+  window.scrollTo(0,0);
+}
+function focusSub(){ $("#subscribe").scrollIntoView(); $("#subEmail").focus({preventScroll:true}); }
+
+document.addEventListener("click", e => {
+  const f = e.target.closest("[data-f]");
+  if(f){ const k = f.dataset.f; $("#filterHost").innerHTML = filterBar(k); $("#wall").innerHTML = wall(k); return; }
+  if(e.target.closest("[data-sub]")){ e.preventDefault(); focusSub(); }
+});
+document.addEventListener("submit", e => {
+  e.preventDefault();
+  if(e.target.id==="subForm"){
+    $("#subMsg").textContent = "Sign-ups aren't switched on yet. They go live when the site launches.";
+  }
+  if(e.target.id==="contactForm"){
+    const subject = encodeURIComponent($("#cWhy").value + " from " + $("#cName").value);
+    const body = encodeURIComponent($("#cMsg").value);
+    $("#cOut").innerHTML = `<a href="mailto:${EMAIL}?subject=${subject}&body=${body}">Open your email app with this message</a>. If nothing opens, email ${EMAIL} directly.`;
+  }
+});
+window.addEventListener("hashchange", render);
+render();
+</script>
+</body>
+</html>
