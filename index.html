@@ -100,6 +100,11 @@ section{padding:56px 0 0}
 .poster:hover{transform:translateY(-6px) rotate(-.6deg);box-shadow:0 18px 0 -8px var(--ink)}
 .poster svg,.poster .glyph{position:absolute;inset:14% 8% auto 8%;width:84%;height:48%;pointer-events:none}
 .poster .glyph{display:grid;place-items:center;font-size:190px;font-weight:800;font-stretch:75%;line-height:1;opacity:.9}
+.poster.has-cover{background-size:cover;background-position:center;color:#fff}
+.poster.has-cover .tag{background:var(--g);color:var(--on);border-radius:999px;padding:3px 10px}
+.shot{margin:0 -40px}
+.shot img{width:100%;border-radius:14px;display:block}
+.shot figcaption{font-family:var(--read);font-style:italic;color:var(--ink-soft);margin-top:8px}
 .poster .top{position:relative;display:flex;justify-content:space-between;gap:8px;font-size:14px;font-weight:700}
 .poster .bottom{position:relative}
 .poster h3{font-size:clamp(26px,2.6vw,32px);margin-bottom:8px}
@@ -188,7 +193,7 @@ footer{margin-top:72px;background:var(--marquee);color:var(--ink)}
 .sub form{grid-template-columns:1fr auto;align-items:start}
 .sub .msg{grid-column:1/-1}
 .foot{border-top:2px solid var(--ink);padding:18px 20px;display:flex;gap:16px;justify-content:space-between;flex-wrap:wrap;font-weight:600;font-size:15px}
-@media (max-width:820px){.frame{margin:0}.sub form{grid-template-columns:1fr}.score{grid-template-columns:86px 1fr 38px}.poster .glyph{font-size:150px}}
+@media (max-width:820px){.frame,.shot{margin:0}.sub form{grid-template-columns:1fr}.score{grid-template-columns:86px 1fr 38px}.poster .glyph{font-size:150px}}
 </style>
 </head>
 <body>
@@ -218,10 +223,14 @@ footer{margin-top:72px;background:var(--marquee);color:var(--ink)}
       <p class="msg" id="subMsg" role="status"></p>
     </form>
   </div>
-  <div class="wrap foot"><span>Medic Hero, written and filmed by Shumile Chishty</span><span>Season 1, 2026</span></div>
+  <div class="wrap foot"><span>Medic Hero, written and filmed by Shumile Chishty</span><span>Season 1, 2026 <a href="admin.html" style="margin-left:14px">Admin</a></span></div>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script>
+const SB_URL = "https://eilldlbssclhcooapxmt.supabase.co";
+const SB_KEY = "sb_publishable_tViO-C9zdgKKgljn9vRkQg_TR3ZVqLQ";
+let sb = null; try { sb = window.supabase.createClient(SB_URL, SB_KEY); } catch(e) {}
 const CHANNEL_URL = "https://www.youtube.com/results?search_query=Medic+Hero"; // swap for the real channel link
 const EMAIL = "officialmedichero@gmail.com";
 
@@ -240,7 +249,7 @@ const G = {
   videography:{name:"Videography",c:"#C4102F",on:"#FFFFFF"}
 };
 
-const POSTS = [
+let POSTS = [
  {id:"s1e3",genre:"episode",ep:3,title:"The week I started writing again",date:"9 Nov 2026",mins:5,
   blurb:"Why I'm bringing the blog back, and what this place is going to be.",
   credits:{Location:"Lincoln",Wearing:"A dark oud, two sprays",Listening:"Rain on the taxi window",Mood:"Locked in"},
@@ -338,7 +347,7 @@ const POSTS = [
   ]}
 ];
 
-const BOOKS = [
+let BOOKS = [
  {genre:"medicine",title:"UKMLA: the big revision guide",tag:"PDF e-book",text:"The conditions that come up most, set out the way they're asked."},
  {genre:"episode",title:"ECG made easy",tag:"PDF e-book",text:"Read any ECG in a set order, from rate and rhythm to the subtle stuff."},
  {genre:"fragrance",title:"O&G in a week",tag:"PDF e-book",text:"Obstetrics and gynaecology for finals, one topic a day."},
@@ -358,6 +367,42 @@ const TRACKS = [
  {genre:"medicine",title:"UKMLA revision",text:"Sample figure. Swap in your real progress.",now:40,of:100,unit:"percent"}
 ];
 
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const safeUrl = u => /^https:\/\/[\w.\-\/%~:?=&+#]+$/.test(u || "") ? u : "";
+const niceDate = d => { const t = new Date(d + "T12:00:00"); return isNaN(t) ? "" : t.toLocaleDateString("en-GB", {day:"numeric", month:"short", year:"numeric"}); };
+function fromRow(r){
+  const scenes = String(r.body || "").split(/\n\s*\n/).map(b => b.trim()).filter(Boolean).map(b => {
+    const m = b.match(/^!\[(.*?)\]\((\S+?)\)$/);
+    if(m) return safeUrl(m[2]) ? {img:{src:m[2], cap:esc(m[1])}} : {p:""};
+    if(b.startsWith(">")) return {quote:esc(b.replace(/^>\s*/, ""))};
+    return {p:esc(b).replace(/\n/g, "<br>")};
+  });
+  const x = r.extras || {};
+  if(x.notes && (x.notes.top || x.notes.heart || x.notes.base)) scenes.push({notes:{name:"Scent notes", top:esc(x.notes.top), heart:esc(x.notes.heart), base:esc(x.notes.base)}});
+  if(Array.isArray(x.scores) && x.scores.length){
+    const rows = x.scores.map(([k, v]) => [esc(k), Math.max(0, Math.min(10, Number(v) || 0))]);
+    scenes.push({score:{title:"Scorecard", rows, overall:(rows.reduce((a, r) => a + r[1], 0) / rows.length).toFixed(1)}});
+  }
+  const credits = {}, c = r.credits || {};
+  ["Location","Wearing","Listening","Mood"].forEach(k => { if(c[k]) credits[k] = esc(c[k]); });
+  const cover = safeUrl(r.cover_url);
+  if(cover) scenes.unshift({img:{src:cover, cap:""}});
+  return {id:String(r.slug).replace(/[^a-z0-9-]/g, ""), genre:G[r.genre] ? r.genre : "episode", ep:r.genre === "episode" && r.ep ? r.ep : undefined,
+    title:esc(r.title), blurb:esc(r.blurb), date:niceDate(r.date), mins:r.mins || 1, cover, credits, scenes};
+}
+const bookRow = r => ({genre:G[r.genre] ? r.genre : "medicine", title:esc(r.title), tag:"PDF e-book", text:esc(r.blurb), price:esc(r.price), buy:safeUrl(r.buy_url), file:safeUrl(r.file_url)});
+let live = false;
+async function load(){
+  if(!sb) return;
+  try{
+    const [p, b] = await Promise.all([
+      sb.from("posts").select("*").eq("published", true).order("date", {ascending:false}).order("created_at", {ascending:false}),
+      sb.from("books").select("*").eq("published", true).order("sort").order("created_at")
+    ]);
+    if(p.data && p.data.length){ POSTS = p.data.map(fromRow); live = true; }
+    if(b.data && b.data.length){ BOOKS = b.data.map(bookRow); }
+  }catch(e){}
+}
 const $ = s => document.querySelector(s);
 const view = $("#view");
 const style = g => `--g:${G[g].c};--on:${G[g].on}`;
@@ -380,9 +425,9 @@ function motif(p){
   }
 }
 
-const poster = p => `<a class="poster" href="#post-${p.id}" style="${style(p.genre)}">
-  <div class="top"><span>${p.ep ? "S1 E"+p.ep : G[p.genre].name}</span><span>${p.mins} min</span></div>
-  ${motif(p)}
+const poster = p => `<a class="poster${p.cover ? " has-cover" : ""}" href="#post-${p.id}" style="${style(p.genre)}${p.cover ? `;background-image:linear-gradient(to top,rgba(15,14,36,.92),rgba(15,14,36,.15) 60%),url(${p.cover})` : ""}">
+  <div class="top"><span class="tag">${p.ep ? "S1 E"+p.ep : G[p.genre].name}</span><span class="tag">${p.mins} min</span></div>
+  ${p.cover ? "" : motif(p)}
   <div class="bottom"><h3>${p.title}</h3><small>${p.blurb}</small></div></a>`;
 
 let curF = "", curQ = "";
@@ -423,7 +468,7 @@ const pages = {
       <div class="screen play" style="${style(p.genre)}">
         <div class="bar"><span>Medic Hero presents</span><em>${epLabel(p)}</em></div>
         <div class="screen-body">
-          <div class="ghost-num" aria-hidden="true">${p.ep}</div>
+          ${p.ep ? `<div class="ghost-num" aria-hidden="true">${p.ep}</div>` : ""}
           <div class="chips"><span class="chip light">Now showing</span><span class="chip">${p.mins} min read</span></div>
           <h1>${p.title}</h1>
           <p class="lede">${p.blurb} A weekly series about medicine, business, travel and everything in between, written by Shumile Chishty.</p>
@@ -431,8 +476,8 @@ const pages = {
         </div>
         <div class="bar"><span>${p.date}</span><em>A blog you read like a film</em></div>
       </div></div>
-      <section class="wrap"><div class="head"><h2>Latest</h2><p>The newest four. Every post is a poster.</p><a class="btn" href="#blog">See every episode</a></div>
-        <div class="wall">${POSTS.slice(1,5).map(poster).join("")}</div></section>
+      ${POSTS.length > 1 ? `<section class="wrap"><div class="head"><h2>Latest</h2><p>The newest posts. Every post is a poster.</p><a class="btn" href="#blog">See every episode</a></div>
+        <div class="wall">${POSTS.slice(1,5).map(poster).join("")}</div></section>` : ""}
       <section class="wrap"><div class="head"><h2>From the bookshelf</h2><p>Revision e-books I'm writing for medical students.</p><a class="btn" href="#shop">See all e-books</a></div>
         <div class="shelf">${BOOKS.slice(0,3).map(book).join("")}</div></section>`;
   },
@@ -506,12 +551,16 @@ const pages = {
 
 function book(b){
   return `<div class="book"><div class="cover" style="${style(b.genre)}"><span>${b.tag}</span><h3>${b.title}</h3><span>Shumile Chishty</span></div>
-    <p>${b.text}</p><div class="row"><span class="chip">Coming soon</span><a class="btn ghost" href="#subscribe" data-sub style="padding:8px 16px">Tell me when it's out</a></div></div>`;
+    <p>${b.text}</p><div class="row">${
+      b.buy ? `<a class="btn pop" href="${b.buy}" target="_blank" rel="noopener">Buy${b.price ? " for " + b.price : ""}</a>` :
+      b.file ? `<a class="btn pop" href="${b.file}" target="_blank" rel="noopener">Download free</a>` :
+      `<span class="chip">Coming soon</span><a class="btn ghost" href="#subscribe" data-sub style="padding:8px 16px">Tell me when it's out</a>`}</div></div>`;
 }
 
 function scene(s){
-  if(s.p) return `<p>${s.p}</p>`;
+  if(s.p !== undefined) return s.p ? `<p>${s.p}</p>` : "";
   if(s.quote) return `<blockquote class="quote" style="margin:0">${s.quote}</blockquote>`;
+  if(s.img) return `<figure class="shot"><img src="${s.img.src}" alt="${s.img.cap}" loading="lazy">${s.img.cap ? `<figcaption>${s.img.cap}</figcaption>` : ""}</figure>`;
   if(s.frame) return `<div class="frame"><span>Photo slot: ${s.frame}</span></div>`;
   if(s.score) return `<div class="card"><h3>${s.score.title}</h3>${s.score.rows.map(([k,v])=>`<div class="score"><span>${k}</span><div class="meter"><b style="width:${v*10}%"></b></div><output>${v}/10</output></div>`).join("")}
     <div class="verdict"><span>Overall</span><b>${s.score.overall}</b></div></div>`;
@@ -548,6 +597,8 @@ function render(){
   view.innerHTML = isPost ? postPage(h.slice(5)) : pages[name]();
   document.querySelectorAll("[data-nav]").forEach(a => a.dataset.nav===name ? a.setAttribute("aria-current","page") : a.removeAttribute("aria-current"));
   window.scrollTo(0,0);
+  document.querySelector(".preview").hidden = live;
+  if(sb) sb.from("views").insert({path:(isPost ? h : name).slice(0, 70)}).then(() => {}, () => {});
 }
 function focusSub(){ $("#subscribe").scrollIntoView(); $("#subEmail").focus({preventScroll:true}); }
 
@@ -559,7 +610,13 @@ document.addEventListener("click", e => {
 document.addEventListener("submit", e => {
   e.preventDefault();
   if(e.target.id==="subForm"){
-    $("#subMsg").textContent = "Sign-ups aren't switched on yet. They go live when the site launches.";
+    const out = $("#subMsg"), email = $("#subEmail").value.trim().toLowerCase();
+    if(!sb){ out.textContent = "Sign-ups aren't working right now. Try again later."; return; }
+    out.textContent = "Adding you...";
+    sb.from("subscribers").insert({email}).then(({error}) => {
+      out.textContent = !error ? "You're on the list." : error.code === "23505" ? "You're already on the list." : "That didn't save. Check the email and try again.";
+      if(!error) e.target.reset();
+    });
   }
   if(e.target.id==="contactForm"){
     const subject = encodeURIComponent($("#cWhy").value + " from " + $("#cName").value);
@@ -569,7 +626,10 @@ document.addEventListener("submit", e => {
 });
 document.addEventListener("input", e => { if(e.target.id==="q"){ curQ = e.target.value; $("#wall").innerHTML = wall(); } });
 window.addEventListener("hashchange", render);
-render();
+let shown = false;
+const loading = load();
+Promise.race([loading, new Promise(r => setTimeout(r, 2500))]).then(() => { shown = true; render(); });
+loading.then(() => { if(shown && live) render(); });
 </script>
 </body>
 </html>
