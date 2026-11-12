@@ -18,7 +18,7 @@ p{margin:0}
 button,input,select,textarea{font:inherit;color:inherit}
 :focus-visible{outline:3px solid var(--cobalt);outline-offset:2px}
 [hidden]{display:none!important}
-.wrap{max-width:980px;margin:0 auto;padding:0 16px}
+.wrap{max-width:1020px;margin:0 auto;padding:0 16px}
 .top{background:var(--ink);color:#fff}
 .top .wrap{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding-top:12px;padding-bottom:12px}
 .top h1{margin-right:auto;font-size:24px}
@@ -27,33 +27,38 @@ button,input,select,textarea{font:inherit;color:inherit}
 .tabs .wrap{display:flex;gap:6px;overflow-x:auto;padding-top:8px;padding-bottom:8px}
 .tabs button{border:0;background:none;padding:9px 16px;border-radius:999px;font-weight:700;cursor:pointer;white-space:nowrap}
 .tabs button[aria-selected="true"]{background:var(--ink);color:#fff}
+.count{background:var(--bad);color:#fff;border-radius:999px;padding:1px 8px;font-size:13px;margin-left:6px}
 main{padding:24px 0 80px}
 .card{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:18px}
 .head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
 .btn{border:0;border-radius:999px;background:var(--ink);color:#fff;font-weight:700;padding:10px 18px;cursor:pointer;text-decoration:none;display:inline-block}
 .btn.pop{background:var(--marquee);color:var(--ink)}
 .btn.line{background:none;color:var(--ink);box-shadow:inset 0 0 0 2px var(--ink)}
-.btn.danger{background:var(--bad)}
+.btn.danger{background:var(--bad);color:#fff;box-shadow:none}
 .btn.small{padding:6px 12px;font-size:14px}
 .btn:disabled{opacity:.5;cursor:default}
 .list{display:grid;gap:8px}
 .item{display:flex;gap:10px;align-items:center;flex-wrap:wrap;border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.item.unread{border-color:var(--ink);border-width:2px}
 .item .t{flex:1 1 240px;min-width:0}
 .item .t b{display:block;font-size:17px;overflow-wrap:anywhere}
 .item .t span{color:var(--soft);font-size:14px}
+.item .body{flex-basis:100%;white-space:pre-wrap;overflow-wrap:anywhere}
 .pill{border-radius:999px;padding:3px 10px;font-size:13px;font-weight:700;background:var(--wash)}
 .pill.live{background:#D9F5E8;color:var(--good)}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px}
+.pill.star{background:var(--marquee)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
 label{display:grid;gap:5px;font-weight:700;font-size:15px}
 label small{font-weight:400;color:var(--soft)}
 input,select,textarea{border:2px solid var(--ink);border-radius:10px;padding:10px 12px;background:#fff;width:100%}
-input[type=checkbox]{width:20px;height:20px;padding:0}
+input[type=checkbox]{width:20px;height:20px;padding:0;flex:none}
 input[type=file]{border-style:dashed;padding:8px}
-textarea{min-height:280px;resize:vertical;line-height:1.5}
+textarea{min-height:140px;resize:vertical;line-height:1.5}
+textarea.tall{min-height:300px}
 .check{display:flex;align-items:center;gap:10px}
 details{border:1px solid var(--line);border-radius:12px;padding:12px 14px}
 summary{font-weight:700;cursor:pointer}
-details .grid{margin-top:12px}
+details > *:not(summary){margin-top:12px}
 form{display:grid;gap:16px}
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 .msg{min-height:1.4em;font-weight:600}
@@ -61,16 +66,24 @@ form{display:grid;gap:16px}
 .help{background:var(--wash);border-radius:12px;padding:12px 14px;font-size:15px;color:var(--soft)}
 .help code{background:#fff;border-radius:6px;padding:1px 6px;color:var(--ink)}
 .thumb{max-height:90px;border-radius:8px;display:block}
-.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:18px}
-.tile{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:18px}
-.tile b{display:block;font-size:40px;font-stretch:78%;line-height:1;font-variant-numeric:tabular-nums}
-.tile span{color:var(--soft);font-weight:600}
-.bars{display:flex;align-items:flex-end;gap:3px;height:150px;border-bottom:2px solid var(--ink);padding-top:8px}
+.rows{display:grid;gap:10px;margin-bottom:10px}
+.rowcard{border:1px dashed var(--soft);border-radius:12px;padding:12px;display:grid;gap:10px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:18px}
+.tile{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:16px}
+.tile b{display:block;font-size:38px;font-stretch:78%;line-height:1;font-variant-numeric:tabular-nums}
+.tile span{color:var(--soft);font-weight:600;font-size:14px}
+.bars{display:flex;align-items:flex-end;gap:2px;height:160px;border-bottom:2px solid var(--ink);padding-top:8px}
 .bars div{flex:1;background:var(--cobalt);border-radius:4px 4px 0 0;min-height:2px}
 .axis{display:flex;justify-content:space-between;color:var(--soft);font-size:13px;margin-top:6px}
 .rank{display:grid;grid-template-columns:1fr auto;gap:8px 14px;font-variant-numeric:tabular-nums}
 .rank div{overflow-wrap:anywhere}
-.gate{max-width:420px;margin:8vh auto;padding:0 16px}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px}
+.cols .card{margin:0}
+.media{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px}
+.media figure{margin:0;border:1px solid var(--line);border-radius:12px;padding:10px;display:grid;gap:8px}
+.media img,.media .doc{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:8px;background:var(--wash);display:grid;place-items:center;font-weight:800}
+.media figcaption{font-size:13px;color:var(--soft);overflow-wrap:anywhere}
+.gate{max-width:440px;margin:8vh auto;padding:0 16px}
 </style>
 </head>
 <body>
@@ -86,6 +99,7 @@ form{display:grid;gap:16px}
         <button class="btn" type="submit">Sign in</button>
         <button class="btn line" type="button" id="createBtn">First time? Create my login</button>
       </div>
+      <button class="btn line small" type="button" id="forgotBtn" style="justify-self:start">Forgot my password</button>
       <p class="msg" id="gateMsg" role="status"></p>
     </form>
   </div>
@@ -98,16 +112,41 @@ form{display:grid;gap:16px}
     <button class="btn pop small" id="outBtn">Sign out</button>
   </div></div>
   <div class="tabs"><div class="wrap" role="tablist">
+    <button role="tab" data-tab="insights">Insights</button>
     <button role="tab" data-tab="posts">Posts</button>
     <button role="tab" data-tab="books">E-books</button>
-    <button role="tab" data-tab="visitors">Visitors</button>
-    <button role="tab" data-tab="subs">Subscribers</button>
+    <button role="tab" data-tab="site">Site content</button>
+    <button role="tab" data-tab="inbox">Inbox<span class="count" id="unread" hidden></span></button>
+    <button role="tab" data-tab="subs">Subscribers and email</button>
+    <button role="tab" data-tab="media">Photos and files</button>
+    <button role="tab" data-tab="account">Account</button>
   </div></div>
   <main class="wrap">
 
-    <section id="tab-posts">
+    <section id="tab-insights" hidden>
+      <div class="head"><h2>How the site is doing</h2>
+        <label for="range" class="row" style="display:flex">Show the last<select id="range" style="width:auto"><option value="7">7 days</option><option value="30" selected>30 days</option><option value="90">90 days</option></select></label></div>
+      <div class="tiles">
+        <div class="tile"><b id="iVisits">0</b><span>visits</span></div>
+        <div class="tile"><b id="iViews">0</b><span>pages viewed</span></div>
+        <div class="tile"><b id="iToday">0</b><span>pages viewed today</span></div>
+        <div class="tile"><b id="iPer">0</b><span>pages per visit</span></div>
+        <div class="tile"><b id="iSubs">0</b><span>subscribers in total</span></div>
+        <div class="tile"><b id="iNewSubs">0</b><span>new subscribers</span></div>
+      </div>
+      <div class="card"><h3 style="margin-bottom:12px">Pages viewed per day</h3><div class="bars" id="bars"></div><div class="axis"><span id="axA"></span><span>Today</span></div></div>
+      <div class="cols">
+        <div class="card"><h3 style="margin-bottom:12px">Most viewed</h3><div class="rank" id="rankPath"></div></div>
+        <div class="card"><h3 style="margin-bottom:12px">Where visitors came from</h3><div class="rank" id="rankRef"></div></div>
+        <div class="card"><h3 style="margin-bottom:12px">Phone or computer</h3><div class="rank" id="rankDev"></div></div>
+      </div>
+      <p class="help" style="margin-top:18px">A visit is one person opening the site. Pages viewed counts every page they look at. No cookies are used, so you don't need a cookie banner for this.</p>
+    </section>
+
+    <section id="tab-posts" hidden>
       <div class="card" id="postListCard">
         <div class="head"><h2>Your posts</h2><button class="btn pop" id="newPost">Write a new post</button></div>
+        <label for="postSearch" style="margin-bottom:12px">Search your posts<input id="postSearch" type="search"></label>
         <div class="list" id="postList"></div>
       </div>
       <div class="card" id="postFormCard" hidden>
@@ -117,16 +156,17 @@ form{display:grid;gap:16px}
           <div class="grid">
             <label for="pGenre">Genre<select id="pGenre"></select></label>
             <label for="pEp" id="pEpWrap">Episode number<input id="pEp" type="number" min="1"></label>
-            <label for="pDate">Date<input id="pDate" type="date" required></label>
+            <label for="pDate">Date <small>Pick a future date to schedule it</small><input id="pDate" type="date" required></label>
           </div>
           <label for="pBlurb">One-line teaser <small>Shows on the poster</small><input id="pBlurb" maxlength="160"></label>
           <label for="pCover">Cover photo <small>Optional. Shows on the poster and at the top of the post.</small><input id="pCover" type="file" accept="image/*"></label>
           <div class="row" id="pCoverRow" hidden><img class="thumb" id="pCoverImg" alt="Cover photo"><button class="btn line small" type="button" id="pCoverClear">Remove cover</button></div>
-          <label for="pBody">Your post<textarea id="pBody" required></textarea></label>
+          <label for="pBody">Your post<textarea id="pBody" class="tall" required></textarea></label>
           <div class="row">
             <label class="btn line small" for="pPhoto" style="display:inline-block">Add a photo to the post</label>
             <input id="pPhoto" type="file" accept="image/*" hidden>
             <button class="btn line small" type="button" id="pQuote">Add a big quote</button>
+            <span id="pWords" style="color:var(--soft)"></span>
           </div>
           <p class="help">Leave an empty line between paragraphs. Start a line with <code>&gt;</code> to make it a big quote. Photos you add show up as a line starting with <code>![</code>, and you can type a caption between the square brackets.</p>
           <details open><summary>Credits</summary><div class="grid">
@@ -142,6 +182,7 @@ form{display:grid;gap:16px}
             <label for="nBase">Base<input id="nBase" maxlength="100"></label>
           </div></details>
           <label class="check" for="pPublished"><input id="pPublished" type="checkbox" checked>Show this post on the site</label>
+          <label class="check" for="pFeatured"><input id="pFeatured" type="checkbox">Put this post in the big spot at the top of the home page</label>
           <div class="row"><button class="btn pop" type="submit" id="savePost">Save post</button><p class="msg" id="postMsg" role="status"></p></div>
         </form>
       </div>
@@ -171,38 +212,106 @@ form{display:grid;gap:16px}
       </div>
     </section>
 
-    <section id="tab-visitors" hidden>
-      <div class="tiles">
-        <div class="tile"><b id="v7">0</b><span>page views, last 7 days</span></div>
-        <div class="tile"><b id="v30">0</b><span>page views, last 30 days</span></div>
-        <div class="tile"><b id="vToday">0</b><span>page views today</span></div>
+    <section id="tab-site" hidden>
+      <form id="siteForm" class="card">
+        <div class="head"><h2>Site content</h2><div class="row"><button class="btn pop" type="submit">Save site content</button></div></div>
+        <p class="msg" id="siteMsg" role="status"></p>
+        <details open><summary>Home page</summary>
+          <label for="sTagline">Line under this week's episode<input id="sTagline" maxlength="200"></label>
+        </details>
+        <details><summary>Right now (shown on the About page)</summary><div id="edNow"></div></details>
+        <details><summary>Progress bars (shown on the About page)</summary><div id="edTracks"></div></details>
+        <details><summary>About me</summary>
+          <label for="sLede">Line under your name<input id="sLede" maxlength="200"></label>
+          <label for="sAbout">Your story <small>Leave an empty line between paragraphs</small><textarea id="sAbout"></textarea></label>
+          <label for="sBadges">Awards and badges <small>Separate them with commas</small><input id="sBadges" maxlength="300"></label>
+        </details>
+        <details><summary>Your businesses</summary><div id="edVentures"></div></details>
+        <details><summary>Watch page and YouTube</summary>
+          <label for="sChannel">Your YouTube channel link<input id="sChannel" type="url" placeholder="https://www.youtube.com/@yourchannel"></label>
+          <div id="edVideos"></div>
+        </details>
+        <details><summary>Contact, subscribe box and social links</summary>
+          <label for="sEmail">Contact email shown on the site<input id="sEmail" type="email"></label>
+          <label for="sSubTitle">Subscribe box heading<input id="sSubTitle" maxlength="80"></label>
+          <label for="sSubText">Subscribe box text<input id="sSubText" maxlength="200"></label>
+          <div id="edSocials"></div>
+        </details>
+        <div class="row"><button class="btn pop" type="submit">Save site content</button><button class="btn line" type="button" id="siteReset">Put the original text back</button></div>
+      </form>
+    </section>
+
+    <section id="tab-inbox" hidden>
+      <div class="card">
+        <div class="head"><h2>Messages from the contact page</h2></div>
+        <div class="list" id="inboxList"></div>
       </div>
-      <div class="card"><h2 style="margin-bottom:12px">Views per day, last 30 days</h2><div class="bars" id="bars"></div><div class="axis"><span id="axA"></span><span id="axB"></span></div></div>
-      <div class="card"><h2 style="margin-bottom:12px">Most viewed, last 30 days</h2><div class="rank" id="rank"></div></div>
     </section>
 
     <section id="tab-subs" hidden>
       <div class="card">
-        <div class="head"><h2><span id="subCount">0</span> subscribers</h2><button class="btn pop" id="copySubs">Copy all emails</button></div>
+        <div class="head"><h2>Email your subscribers</h2></div>
+        <form id="mailForm">
+          <label for="mPost">Start from a post <small>Fills in the subject and message for you</small><select id="mPost"><option value="">Write from scratch</option></select></label>
+          <label for="mSubject">Subject<input id="mSubject" required maxlength="150"></label>
+          <label for="mBody">Message<textarea id="mBody" required></textarea></label>
+          <div class="row">
+            <button class="btn pop" type="submit">Open in my email app</button>
+            <button class="btn line" type="button" id="mCopyBody">Copy message</button>
+            <button class="btn line" type="button" id="mCopyTo">Copy all emails</button>
+          </div>
+          <p class="msg" id="mailMsg" role="status"></p>
+          <p class="help">This opens your own email app with every subscriber hidden in BCC, so nobody sees anyone else's address. You press send there. If the list gets too long for that, use the two copy buttons and paste into a new email, with the addresses in BCC.</p>
+        </form>
+      </div>
+      <div class="card">
+        <div class="head"><h2><span id="subCount">0</span> subscribers</h2><div class="row"><button class="btn line small" id="csvSubs">Download as a spreadsheet</button></div></div>
+        <form id="addSubForm" class="row" style="display:flex;margin-bottom:12px">
+          <label for="addSub" style="flex:1 1 240px">Add someone by hand<input id="addSub" type="email" placeholder="name@example.com" required></label>
+          <button class="btn" type="submit" style="align-self:end">Add</button>
+        </form>
         <p class="msg" id="subsMsg" role="status"></p>
         <div class="list" id="subList"></div>
+      </div>
+    </section>
+
+    <section id="tab-media" hidden>
+      <div class="card">
+        <div class="head"><h2>Photos and files</h2><label class="btn pop" for="mediaUp">Upload a photo or PDF</label><input id="mediaUp" type="file" accept="image/*,application/pdf" hidden></div>
+        <p class="msg" id="mediaMsg" role="status"></p>
+        <div class="media" id="mediaGrid"></div>
+      </div>
+    </section>
+
+    <section id="tab-account" hidden>
+      <div class="card">
+        <h2 style="margin-bottom:8px">Your account</h2>
+        <p style="margin-bottom:16px">Signed in as <b id="whoami"></b></p>
+        <form id="passForm">
+          <label for="newPass">New password <small>At least 8 characters</small><input id="newPass" type="password" autocomplete="new-password" minlength="8" required></label>
+          <div class="row"><button class="btn" type="submit">Change my password</button><p class="msg" id="passMsg" role="status"></p></div>
+        </form>
       </div>
     </section>
   </main>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="site-defaults.js"></script>
 <script>
 const SB_URL = "https://eilldlbssclhcooapxmt.supabase.co";
 const SB_KEY = "sb_publishable_tViO-C9zdgKKgljn9vRkQg_TR3ZVqLQ";
 const sb = window.supabase.createClient(SB_URL, SB_KEY);
+const SITE_URL = location.origin + location.pathname.replace(/admin\.html$/, "");
 const GEN = {episode:"Weekly Episode",medicine:"Medicine",travel:"Travel",reviews:"Reviews",fragrance:"Fragrance",unique:"The Unique Ting",business:"Business",languages:"Languages",magic:"Magic",art:"Art",photography:"Photography",videography:"Videography"};
+const GENRE_OPTS = Object.entries(GEN).map(([k, v]) => `<option value="${k}">${v}</option>`).join("");
 const SCORE_DEFAULTS = ["Room","Service","Food","Value"];
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const say = (el, text, kind) => { el.textContent = text; el.className = "msg" + (kind ? " " + kind : ""); };
 const today = () => new Date().toLocaleDateString("en-CA");
-let posts = [], books = [], editPost = null, editBook = null, coverUrl = "", fileUrl = "";
+const copy = async (text, el, ok) => { try{ await navigator.clipboard.writeText(text); say(el, ok, "good"); }catch(e){ say(el, "Couldn't copy. Select the text and copy it by hand.", "bad"); } };
+let posts = [], books = [], subs = [], editPost = null, editBook = null, coverUrl = "", fileUrl = "", uid = 0;
 
 /* ---------- sign in ---------- */
 async function boot(){
@@ -211,10 +320,12 @@ async function boot(){
 }
 async function enter(){
   const { data, error } = await sb.rpc("is_admin");
-  if(error){ $("#gate").hidden = false; return say($("#gateMsg"), "The database isn't set up yet. Ask Claude to finish the setup.", "bad"); }
+  if(error){ $("#gate").hidden = false; return say($("#gateMsg"), "The database isn't set up yet. Run the setup script in Supabase first.", "bad"); }
   if(!data){ await sb.auth.signOut(); $("#gate").hidden = false; return say($("#gateMsg"), "That login isn't the site owner's, so it can't open the admin.", "bad"); }
-  $("#gate").hidden = true; $("#app").hidden = false; openTab("posts");
+  const { data:{ user } } = await sb.auth.getUser(); $("#whoami").textContent = user?.email || "";
+  $("#gate").hidden = true; $("#app").hidden = false; openTab("insights");
 }
+const redirect = () => ({ emailRedirectTo: location.origin + location.pathname });
 $("#signForm").addEventListener("submit", async e => {
   e.preventDefault(); say($("#gateMsg"), "Signing in...");
   const { error } = await sb.auth.signInWithPassword({ email:$("#email").value.trim(), password:$("#password").value });
@@ -224,18 +335,30 @@ $("#signForm").addEventListener("submit", async e => {
 $("#createBtn").addEventListener("click", async () => {
   if(!$("#signForm").reportValidity()) return;
   say($("#gateMsg"), "Creating your login...");
-  const { data, error } = await sb.auth.signUp({ email:$("#email").value.trim(), password:$("#password").value, options:{ emailRedirectTo: location.origin + location.pathname } });
+  const { data, error } = await sb.auth.signUp({ email:$("#email").value.trim(), password:$("#password").value, options:redirect() });
   if(error) return say($("#gateMsg"), error.message, "bad");
   if(data.session) return enter();
   say($("#gateMsg"), "Check your email and press the confirm link. Then come back here and sign in.", "good");
 });
+$("#forgotBtn").addEventListener("click", async () => {
+  const email = $("#email").value.trim();
+  if(!email) return say($("#gateMsg"), "Type your email in the box first.", "bad");
+  const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: location.origin + location.pathname });
+  say($("#gateMsg"), error ? error.message : "Check your email for a reset link. It signs you in, then you set a new password on the Account tab.", error ? "bad" : "good");
+});
 $("#outBtn").addEventListener("click", async () => { await sb.auth.signOut(); location.reload(); });
+$("#passForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const { error } = await sb.auth.updateUser({ password:$("#newPass").value });
+  say($("#passMsg"), error ? error.message : "Password changed.", error ? "bad" : "good"); if(!error) e.target.reset();
+});
 
 /* ---------- tabs ---------- */
+const TABS = ["insights","posts","books","site","inbox","subs","media","account"];
 function openTab(name){
   document.querySelectorAll("[data-tab]").forEach(b => b.setAttribute("aria-selected", b.dataset.tab === name));
-  ["posts","books","visitors","subs"].forEach(t => $("#tab-" + t).hidden = t !== name);
-  ({ posts:loadPosts, books:loadBooks, visitors:loadVisitors, subs:loadSubs })[name]();
+  TABS.forEach(t => $("#tab-" + t).hidden = t !== name);
+  ({ insights:loadInsights, posts:loadPosts, books:loadBooks, site:loadSite, inbox:loadInbox, subs:loadSubs, media:loadMedia, account(){} })[name]();
 }
 document.querySelectorAll("[data-tab]").forEach(b => b.addEventListener("click", () => openTab(b.dataset.tab)));
 
@@ -247,35 +370,71 @@ async function upload(file){
   return sb.storage.from("media").getPublicUrl(name).data.publicUrl;
 }
 
+/* ---------- insights ---------- */
+async function loadInsights(){
+  const days = parseInt($("#range").value, 10);
+  const { data, error } = await sb.rpc("views_summary", { days });
+  const s = error || !data ? { views:0, visits:0, by_day:[], by_path:[], by_ref:[], by_device:[], subs:0, new_subs:0, unread:0 } : data;
+  const byDay = Object.fromEntries(s.by_day.map(r => [r.day, r.views]));
+  const keys = Array.from({length:days}, (_, i) => { const t = new Date(); t.setDate(t.getDate() - (days - 1 - i)); return t.toLocaleDateString("en-CA"); });
+  const vals = keys.map(k => byDay[k] || 0), max = Math.max(1, ...vals);
+  $("#iViews").textContent = s.views; $("#iVisits").textContent = s.visits; $("#iToday").textContent = vals[days - 1];
+  $("#iPer").textContent = s.visits ? (s.views / s.visits).toFixed(1) : "0";
+  $("#iSubs").textContent = s.subs; $("#iNewSubs").textContent = s.new_subs;
+  $("#bars").innerHTML = vals.map((v, i) => `<div style="height:${v / max * 100}%" title="${keys[i]}: ${v}"></div>`).join("");
+  $("#axA").textContent = keys[0];
+  const names = { home:"Home", blog:"Episodes", shop:"E-books", watch:"Watch", about:"About", contact:"Contact" };
+  if(!posts.length) await fetchPosts();
+  const label = path => names[path] || (path.startsWith("post-") ? (posts.find(x => x.slug === path.slice(5))?.title || "Sample post: " + path.slice(5)) : path);
+  const rank = (rows, key, map) => rows.length ? rows.map(r => `<div>${esc(map ? map(r[key]) : r[key])}</div><div><b>${r.n}</b></div>`).join("") : `<div>Nothing recorded yet.</div><div></div>`;
+  $("#rankPath").innerHTML = rank(s.by_path, "path", label);
+  $("#rankRef").innerHTML = rank(s.by_ref, "ref");
+  $("#rankDev").innerHTML = rank(s.by_device, "device", d => d === "mobile" ? "Phone" : d === "desktop" ? "Computer or tablet" : "Unknown");
+  showUnread(s.unread);
+}
+$("#range").addEventListener("change", loadInsights);
+function showUnread(n){ $("#unread").hidden = !n; $("#unread").textContent = n; }
+
 /* ---------- posts ---------- */
-$("#pGenre").innerHTML = Object.entries(GEN).map(([k, v]) => `<option value="${k}">${v}</option>`).join("");
-$("#bGenre").innerHTML = $("#pGenre").innerHTML;
+$("#pGenre").innerHTML = GENRE_OPTS; $("#bGenre").innerHTML = GENRE_OPTS;
 $("#scoreGrid").innerHTML = SCORE_DEFAULTS.map((d, i) => `<label for="sk${i}">What you're scoring<input id="sk${i}" maxlength="20" placeholder="${d}"></label><label for="sv${i}">Score out of 10<input id="sv${i}" type="number" min="0" max="10" step="0.5"></label>`).join("");
 $("#pGenre").addEventListener("change", () => $("#pEpWrap").hidden = $("#pGenre").value !== "episode");
+$("#pBody").addEventListener("input", () => { const n = $("#pBody").value.trim().split(/\s+/).filter(Boolean).length; $("#pWords").textContent = n + " words, about " + Math.max(1, Math.round(n / 200)) + " min to read"; });
 
-async function loadPosts(){
+async function fetchPosts(){
   const { data, error } = await sb.from("posts").select("*").order("date", {ascending:false}).order("created_at", {ascending:false});
-  posts = data || [];
-  $("#postList").innerHTML = error ? `<p class="msg bad">Couldn't load your posts. Refresh the page.</p>` :
-    posts.length ? posts.map(p => `<div class="item"><div class="t"><b>${esc(p.title)}</b><span>${esc(GEN[p.genre] || p.genre)}${p.ep ? ", episode " + p.ep : ""}, ${esc(p.date)}</span></div>
-      <span class="pill ${p.published ? "live" : ""}">${p.published ? "On the site" : "Hidden"}</span>
-      <button class="btn line small" data-edit-post="${p.id}">Edit</button>
-      <button class="btn line small" data-del-post="${p.id}">Delete</button></div>`).join("") :
-    `<p class="help">No posts yet. The site shows sample posts until you publish your first one. After that, only your posts show.</p>`;
+  posts = data || []; return error;
 }
-function showPostForm(p){
-  editPost = p || null;
-  $("#postFormTitle").textContent = p ? "Edit post" : "New post";
-  $("#pTitle").value = p?.title || ""; $("#pGenre").value = p?.genre || "episode";
+async function loadPosts(){ const error = await fetchPosts(); paintPosts(error); fillMailPosts(); }
+function paintPosts(error){
+  const q = $("#postSearch").value.trim().toLowerCase();
+  const list = posts.filter(p => !q || (p.title + " " + p.blurb + " " + (GEN[p.genre] || "")).toLowerCase().includes(q));
+  $("#postList").innerHTML = error ? `<p class="msg bad">Couldn't load your posts. Refresh the page.</p>` :
+    !posts.length ? `<p class="help">No posts yet. The site shows sample posts until you publish your first one. After that, only your posts show.</p>` :
+    !list.length ? `<p class="help">No posts match that search.</p>` :
+    list.map(p => `<div class="item"><div class="t"><b>${esc(p.title)}</b><span>${esc(GEN[p.genre] || p.genre)}${p.ep ? ", episode " + p.ep : ""}, ${esc(p.date)}</span></div>
+      ${p.featured ? `<span class="pill star">Top of home page</span>` : ""}
+      <span class="pill ${p.published && p.date <= today() ? "live" : ""}">${!p.published ? "Hidden" : p.date > today() ? "Scheduled" : "On the site"}</span>
+      <a class="btn line small" href="${SITE_URL}#post-${esc(p.slug)}" target="_blank" rel="noopener">View</a>
+      <button class="btn line small" data-edit-post="${p.id}">Edit</button>
+      <button class="btn line small" data-copy-post="${p.id}">Duplicate</button>
+      <button class="btn line small" data-del="posts" data-id="${p.id}">Delete</button></div>`).join("");
+}
+$("#postSearch").addEventListener("input", () => paintPosts());
+function showPostForm(p, asCopy){
+  editPost = p && !asCopy ? p : null;
+  $("#postFormTitle").textContent = editPost ? "Edit post" : "New post";
+  $("#pTitle").value = p ? p.title + (asCopy ? " (copy)" : "") : ""; $("#pGenre").value = p?.genre || "episode";
   const nextEp = Math.max(0, ...posts.filter(x => x.genre === "episode").map(x => x.ep || 0)) + 1;
-  $("#pEp").value = p ? (p.ep || "") : nextEp; $("#pEpWrap").hidden = $("#pGenre").value !== "episode";
-  $("#pDate").value = p?.date || today(); $("#pBlurb").value = p?.blurb || ""; $("#pBody").value = p?.body || "";
+  $("#pEp").value = editPost ? (p.ep || "") : nextEp; $("#pEpWrap").hidden = $("#pGenre").value !== "episode";
+  $("#pDate").value = editPost ? p.date : today(); $("#pBlurb").value = p?.blurb || ""; $("#pBody").value = p?.body || "";
   const c = p?.credits || {}; $("#cLocation").value = c.Location || ""; $("#cWearing").value = c.Wearing || ""; $("#cListening").value = c.Listening || ""; $("#cMood").value = c.Mood || "";
   const x = p?.extras || {}, sc = x.scores || [];
   SCORE_DEFAULTS.forEach((d, i) => { $("#sk" + i).value = sc[i]?.[0] || ""; $("#sv" + i).value = sc[i]?.[1] ?? ""; });
   $("#nTop").value = x.notes?.top || ""; $("#nHeart").value = x.notes?.heart || ""; $("#nBase").value = x.notes?.base || "";
-  $("#pPublished").checked = p ? p.published : true;
-  setCover(p?.cover_url || ""); $("#pCover").value = ""; say($("#postMsg"), "");
+  $("#pPublished").checked = editPost ? p.published : !asCopy; $("#pFeatured").checked = editPost ? !!p.featured : false;
+  setCover(p?.cover_url || ""); $("#pCover").value = ""; say($("#postMsg"), asCopy ? "This is a copy. It stays hidden until you tick the box and save." : "");
+  $("#pBody").dispatchEvent(new Event("input"));
   $("#postListCard").hidden = true; $("#postFormCard").hidden = false; window.scrollTo(0, 0);
 }
 function setCover(url){ coverUrl = url; $("#pCoverRow").hidden = !url; if(url) $("#pCoverImg").src = url; }
@@ -290,8 +449,8 @@ $("#pCover").addEventListener("change", async e => {
 });
 function insertAtCursor(text){
   const t = $("#pBody"), a = t.selectionStart ?? t.value.length;
-  t.value = t.value.slice(0, a).replace(/\s*$/, "") + (a ? "\n\n" : "") + text + "\n\n" + t.value.slice(a).replace(/^\s*/, "");
-  t.focus();
+  const before = t.value.slice(0, a).replace(/\s*$/, ""), after = t.value.slice(a).replace(/^\s*/, "");
+  t.value = before + (before ? "\n\n" : "") + text + "\n\n" + after; t.focus(); t.dispatchEvent(new Event("input"));
 }
 $("#pPhoto").addEventListener("change", async e => {
   const f = e.target.files[0]; if(!f) return;
@@ -310,12 +469,13 @@ $("#postForm").addEventListener("submit", async e => {
     mins: Math.max(1, Math.round(body.split(/\s+/).length / 200)),
     credits: { Location:$("#cLocation").value.trim(), Wearing:$("#cWearing").value.trim(), Listening:$("#cListening").value.trim(), Mood:$("#cMood").value.trim() },
     extras: { scores, notes:{ top:$("#nTop").value.trim(), heart:$("#nHeart").value.trim(), base:$("#nBase").value.trim() } },
-    published: $("#pPublished").checked
+    published: $("#pPublished").checked, featured: $("#pFeatured").checked
   };
   if(!editPost) row.slug = (title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 50) || "post") + "-" + Math.random().toString(36).slice(2, 6);
   $("#savePost").disabled = true; say($("#postMsg"), "Saving...");
-  const q = editPost ? sb.from("posts").update(row).eq("id", editPost.id) : sb.from("posts").insert(row);
-  const { error } = await q; $("#savePost").disabled = false;
+  if(row.featured) await sb.from("posts").update({ featured:false }).eq("featured", true);
+  const { error } = await (editPost ? sb.from("posts").update(row).eq("id", editPost.id) : sb.from("posts").insert(row));
+  $("#savePost").disabled = false;
   if(error) return say($("#postMsg"), "That didn't save: " + error.message, "bad");
   closePostForm();
 });
@@ -328,7 +488,7 @@ async function loadBooks(){
     books.length ? books.map(b => `<div class="item"><div class="t"><b>${esc(b.title)}</b><span>${esc(b.price || "No price")}, ${b.buy_url ? "has a buy link" : b.file_url ? "free download" : "coming soon (no link yet)"}</span></div>
       <span class="pill ${b.published ? "live" : ""}">${b.published ? "On the site" : "Hidden"}</span>
       <button class="btn line small" data-edit-book="${b.id}">Edit</button>
-      <button class="btn line small" data-del-book="${b.id}">Delete</button></div>`).join("") :
+      <button class="btn line small" data-del="books" data-id="${b.id}">Delete</button></div>`).join("") :
     `<p class="help">No e-books yet. The site shows four sample books until you add your first one.</p>`;
 }
 function setFile(url){ fileUrl = url; $("#bFileRow").hidden = !url; if(url) $("#bFileLink").href = url; }
@@ -360,47 +520,143 @@ $("#bookForm").addEventListener("submit", async e => {
   closeBookForm();
 });
 
-/* ---------- edit and delete buttons ---------- */
+/* ---------- site content ---------- */
+const EDITORS = {
+  edNow:      { add:"Add another", fields:[{k:"label", label:"Label", max:30}, {k:"value", label:"What you're on", max:90}] },
+  edTracks:   { add:"Add a progress bar", fields:[{k:"title", label:"Goal", max:50}, {k:"text", label:"Short note", max:140}, {k:"now", label:"Where you're at", type:"number"}, {k:"of", label:"Out of", type:"number"}, {k:"unit", label:"Counting what? (months, books, percent)", max:20}, {k:"genre", label:"Colour", type:"genre"}] },
+  edVentures: { add:"Add a business", fields:[{k:"name", label:"Name", max:50}, {k:"text", label:"What it is", max:120}, {k:"url", label:"Website link (optional)", type:"url", max:200}] },
+  edVideos:   { add:"Add a video", fields:[{k:"title", label:"Title", max:60}, {k:"text", label:"Short description", max:140}, {k:"state", label:"Tag (Out now, In planning)", max:30}, {k:"url", label:"YouTube link", type:"url", max:200}, {k:"genre", label:"Colour", type:"genre"}] },
+  edSocials:  { add:"Add a social link", fields:[{k:"name", label:"Name (Instagram, TikTok)", max:30}, {k:"url", label:"Link", type:"url", max:200}] }
+};
+function addRow(id, r = {}){
+  const n = uid++, div = document.createElement("div"); div.className = "rowcard";
+  div.innerHTML = `<div class="grid">${EDITORS[id].fields.map(f => `<label for="f${n}${f.k}">${f.label}${f.type === "genre"
+    ? `<select id="f${n}${f.k}" data-k="${f.k}">${GENRE_OPTS}</select>`
+    : `<input id="f${n}${f.k}" data-k="${f.k}" ${f.type === "number" ? 'type="number"' : f.type === "url" ? 'type="url" placeholder="https://"' : ""} maxlength="${f.max || 120}">`}</label>`).join("")}</div>
+    <div><button class="btn line small" type="button" data-remove-row>Remove</button></div>`;
+  EDITORS[id].fields.forEach(f => { div.querySelector(`[data-k="${f.k}"]`).value = r[f.k] ?? (f.type === "genre" ? "episode" : ""); });
+  $("#" + id + " .rows").appendChild(div);
+}
+function setRows(id, rows){
+  $("#" + id).innerHTML = `<div class="rows"></div><button class="btn line small" type="button" data-add-row="${id}">${EDITORS[id].add}</button>`;
+  (rows || []).forEach(r => addRow(id, r));
+}
+function readRows(id){
+  const plain = EDITORS[id].fields.filter(f => f.type !== "genre").map(f => f.k);
+  return [...document.querySelectorAll("#" + id + " .rowcard")].map(d => Object.fromEntries([...d.querySelectorAll("[data-k]")].map(el => [el.dataset.k, el.value.trim()]))).filter(o => plain.some(k => o[k]));
+}
+function fillSite(v){
+  $("#sTagline").value = v.tagline; $("#sLede").value = v.aboutLede; $("#sAbout").value = v.aboutText; $("#sBadges").value = (v.badges || []).join(", ");
+  $("#sChannel").value = v.channelUrl; $("#sEmail").value = v.email; $("#sSubTitle").value = v.subTitle; $("#sSubText").value = v.subText;
+  setRows("edNow", v.now); setRows("edTracks", v.tracks); setRows("edVentures", v.ventures); setRows("edVideos", v.videos); setRows("edSocials", v.socials);
+}
+async function loadSite(){
+  const { data } = await sb.from("settings").select("value").eq("key", "site").maybeSingle();
+  fillSite(Object.assign(JSON.parse(JSON.stringify(window.SITE_DEFAULTS)), data?.value || {})); say($("#siteMsg"), "");
+}
+$("#siteForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const value = { tagline:$("#sTagline").value.trim(), aboutLede:$("#sLede").value.trim(), aboutText:$("#sAbout").value.trim(),
+    badges:$("#sBadges").value.split(",").map(x => x.trim()).filter(Boolean), channelUrl:$("#sChannel").value.trim(), email:$("#sEmail").value.trim(),
+    subTitle:$("#sSubTitle").value.trim(), subText:$("#sSubText").value.trim(),
+    now:readRows("edNow"), tracks:readRows("edTracks"), ventures:readRows("edVentures"), videos:readRows("edVideos"), socials:readRows("edSocials") };
+  say($("#siteMsg"), "Saving...");
+  const { error } = await sb.from("settings").upsert({ key:"site", value, updated_at:new Date().toISOString() });
+  say($("#siteMsg"), error ? "That didn't save: " + error.message : "Saved. Refresh the site to see it.", error ? "bad" : "good"); window.scrollTo(0, 0);
+});
+$("#siteReset").addEventListener("click", e => {
+  const b = e.currentTarget;
+  if(!b.dataset.sure){ b.dataset.sure = "1"; b.textContent = "Sure? This fills the boxes with the original text"; return; }
+  delete b.dataset.sure; b.textContent = "Put the original text back";
+  fillSite(JSON.parse(JSON.stringify(window.SITE_DEFAULTS))); say($("#siteMsg"), "Original text is back in the boxes. Press Save to make it live.", "good"); window.scrollTo(0, 0);
+});
+
+/* ---------- inbox ---------- */
+async function loadInbox(){
+  const { data, error } = await sb.from("messages").select("*").order("created_at", {ascending:false}).limit(200);
+  const list = data || []; showUnread(list.filter(m => !m.is_read).length);
+  $("#inboxList").innerHTML = error ? `<p class="msg bad">Couldn't load messages. Refresh the page.</p>` :
+    list.length ? list.map(m => `<div class="item ${m.is_read ? "" : "unread"}"><div class="t"><b>${esc(m.name)} ${m.is_read ? "" : `<span class="pill star">New</span>`}</b><span>${esc(m.email)}, ${esc(m.topic)}, ${esc(String(m.created_at).slice(0, 10))}</span></div>
+      <a class="btn line small" href="mailto:${esc(m.email)}?subject=${encodeURIComponent("Re: " + m.topic)}">Reply by email</a>
+      <button class="btn line small" data-read="${m.id}" data-to="${m.is_read ? "0" : "1"}">${m.is_read ? "Mark as new" : "Mark as read"}</button>
+      <button class="btn line small" data-del="messages" data-id="${m.id}">Delete</button>
+      <p class="body">${esc(m.body)}</p></div>`).join("") :
+    `<p class="help">No messages yet. Anything sent from the Contact page lands here.</p>`;
+}
+
+/* ---------- subscribers and email ---------- */
+async function loadSubs(){
+  const { data } = await sb.from("subscribers").select("*").order("created_at", {ascending:false});
+  subs = data || []; $("#subCount").textContent = subs.length;
+  $("#subList").innerHTML = subs.length ? subs.map(s => `<div class="item"><div class="t"><b>${esc(s.email)}</b><span>Joined ${esc(String(s.created_at).slice(0, 10))}</span></div>
+    <button class="btn line small" data-del="subscribers" data-id="${esc(s.email)}">Remove</button></div>`).join("") :
+    `<p class="help">Nobody has subscribed yet. Emails from the Subscribe box on the site land here.</p>`;
+  if(!posts.length) await fetchPosts(); fillMailPosts();
+}
+function fillMailPosts(){
+  $("#mPost").innerHTML = `<option value="">Write from scratch</option>` + posts.filter(p => p.published).map(p => `<option value="${p.id}">${esc(p.title)}</option>`).join("");
+}
+const mailFooter = () => `\n\n--\nYou're getting this because you subscribed at ${SITE_URL}\nTo stop these emails, reply with the word unsubscribe.`;
+$("#mPost").addEventListener("change", () => {
+  const p = posts.find(x => x.id === $("#mPost").value); if(!p) return;
+  $("#mSubject").value = "New on Medic Hero: " + p.title;
+  $("#mBody").value = `${p.blurb ? p.blurb + "\n\n" : ""}Read it here: ${SITE_URL}#post-${p.slug}` + mailFooter();
+});
+$("#mailForm").addEventListener("submit", e => {
+  e.preventDefault();
+  if(!subs.length) return say($("#mailMsg"), "You don't have any subscribers yet.", "bad");
+  const body = $("#mBody").value.includes("unsubscribe") ? $("#mBody").value : $("#mBody").value + mailFooter();
+  const href = `mailto:?bcc=${encodeURIComponent(subs.map(s => s.email).join(","))}&subject=${encodeURIComponent($("#mSubject").value)}&body=${encodeURIComponent(body)}`;
+  if(href.length > 1900) return say($("#mailMsg"), "Your list or message is too long to open this way. Use Copy message and Copy all emails, then paste into a new email with the addresses in BCC.", "bad");
+  location.href = href; say($("#mailMsg"), "Your email app should open with everyone in BCC. Press send there.", "good");
+});
+$("#mCopyBody").addEventListener("click", () => copy($("#mSubject").value + "\n\n" + $("#mBody").value, $("#mailMsg"), "Message copied."));
+$("#mCopyTo").addEventListener("click", () => copy(subs.map(s => s.email).join(", "), $("#mailMsg"), "Copied " + subs.length + " emails. Paste them into BCC."));
+$("#addSubForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const { error } = await sb.from("subscribers").insert({ email:$("#addSub").value.trim().toLowerCase() });
+  say($("#subsMsg"), !error ? "Added." : error.code === "23505" ? "They're already on the list." : "That didn't save: " + error.message, error ? "bad" : "good");
+  if(!error){ e.target.reset(); loadSubs(); }
+});
+$("#csvSubs").addEventListener("click", () => {
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob(["email,joined\n" + subs.map(s => `${s.email},${String(s.created_at).slice(0, 10)}`).join("\n")], { type:"text/csv" }));
+  a.download = "medic-hero-subscribers.csv"; a.click(); URL.revokeObjectURL(a.href);
+});
+
+/* ---------- photos and files ---------- */
+async function loadMedia(){
+  const { data, error } = await sb.storage.from("media").list("", { limit:200, sortBy:{ column:"created_at", order:"desc" } });
+  const files = (data || []).filter(f => f.id);
+  $("#mediaGrid").innerHTML = error ? `<p class="msg bad">Couldn't load your files. Refresh the page.</p>` :
+    files.length ? files.map(f => { const url = sb.storage.from("media").getPublicUrl(f.name).data.publicUrl, img = /\.(png|jpe?g|gif|webp|avif|svg)$/i.test(f.name);
+      return `<figure>${img ? `<img src="${url}" alt="" loading="lazy">` : `<div class="doc">PDF</div>`}<figcaption>${esc(f.name.replace(/^\d+-/, ""))}</figcaption>
+        <div class="row"><button class="btn line small" data-copy-url="${url}">Copy link</button><button class="btn line small" data-del="media" data-id="${esc(f.name)}">Delete</button></div></figure>`; }).join("") :
+    `<p class="help">Nothing uploaded yet. Photos you add to posts and free PDFs show up here.</p>`;
+}
+$("#mediaUp").addEventListener("change", async e => {
+  const f = e.target.files[0]; if(!f) return;
+  say($("#mediaMsg"), "Uploading...");
+  try{ await upload(f); say($("#mediaMsg"), "Uploaded.", "good"); loadMedia(); }catch(err){ say($("#mediaMsg"), "That didn't upload. It may be too big.", "bad"); }
+  e.target.value = "";
+});
+
+/* ---------- shared buttons ---------- */
 document.addEventListener("click", async e => {
   const b = e.target.closest("button"); if(!b) return;
   if(b.dataset.editPost) return showPostForm(posts.find(p => p.id === b.dataset.editPost));
+  if(b.dataset.copyPost) return showPostForm(posts.find(p => p.id === b.dataset.copyPost), true);
   if(b.dataset.editBook) return showBookForm(books.find(x => x.id === b.dataset.editBook));
-  const table = b.dataset.delPost ? "posts" : b.dataset.delBook ? "books" : null;
-  if(!table) return;
+  if(b.dataset.addRow) return addRow(b.dataset.addRow);
+  if("removeRow" in b.dataset) return b.closest(".rowcard").remove();
+  if(b.dataset.copyUrl) return copy(b.dataset.copyUrl, $("#mediaMsg"), "Link copied.");
+  if(b.dataset.read){ await sb.from("messages").update({ is_read:b.dataset.to === "1" }).eq("id", b.dataset.read); return loadInbox(); }
+  const t = b.dataset.del; if(!t) return;
   if(!b.dataset.sure){ b.dataset.sure = "1"; b.textContent = "Delete for good?"; b.classList.add("danger"); b.classList.remove("line"); return; }
   b.disabled = true;
-  await sb.from(table).delete().eq("id", b.dataset.delPost || b.dataset.delBook);
-  table === "posts" ? loadPosts() : loadBooks();
-});
-
-/* ---------- visitors ---------- */
-async function loadVisitors(){
-  const [d, p] = await Promise.all([sb.rpc("views_by_day", {days:30}), sb.rpc("views_by_path", {days:30})]);
-  const byDay = Object.fromEntries((d.data || []).map(r => [r.day, Number(r.n)]));
-  const days = Array.from({length:30}, (_, i) => { const t = new Date(); t.setDate(t.getDate() - (29 - i)); return t.toLocaleDateString("en-CA"); });
-  const vals = days.map(k => byDay[k] || 0), max = Math.max(1, ...vals);
-  $("#v30").textContent = vals.reduce((a, b) => a + b, 0);
-  $("#v7").textContent = vals.slice(-7).reduce((a, b) => a + b, 0);
-  $("#vToday").textContent = vals[29];
-  $("#bars").innerHTML = vals.map((v, i) => `<div style="height:${v / max * 100}%" title="${days[i]}: ${v}"></div>`).join("");
-  $("#axA").textContent = days[0]; $("#axB").textContent = "Today";
-  const names = { home:"Home", blog:"Episodes", shop:"E-books", watch:"Watch", about:"About", contact:"Contact" };
-  if(!posts.length) await loadPosts();
-  const label = path => names[path] || (path.startsWith("post-") ? (posts.find(x => x.slug === path.slice(5))?.title || "Sample post: " + path.slice(5)) : path);
-  $("#rank").innerHTML = (p.data || []).length ? p.data.map(r => `<div>${esc(label(r.path))}</div><div><b>${r.n}</b></div>`).join("") : `<div>No visits recorded yet.</div><div></div>`;
-}
-
-/* ---------- subscribers ---------- */
-let subs = [];
-async function loadSubs(){
-  const { data } = await sb.from("subscribers").select("*").order("created_at", {ascending:false});
-  subs = data || []; $("#subCount").textContent = subs.length; say($("#subsMsg"), "");
-  $("#subList").innerHTML = subs.length ? subs.map(s => `<div class="item"><div class="t"><b>${esc(s.email)}</b><span>Joined ${esc(String(s.created_at).slice(0, 10))}</span></div></div>`).join("") :
-    `<p class="help">Nobody has subscribed yet. Emails from the Subscribe box on the site land here.</p>`;
-}
-$("#copySubs").addEventListener("click", async () => {
-  try{ await navigator.clipboard.writeText(subs.map(s => s.email).join(", ")); say($("#subsMsg"), "Copied " + subs.length + " emails.", "good"); }
-  catch(err){ say($("#subsMsg"), "Couldn't copy. Select the emails below and copy them by hand.", "bad"); }
+  if(t === "media") await sb.storage.from("media").remove([b.dataset.id]);
+  else await sb.from(t).delete().eq(t === "subscribers" ? "email" : "id", b.dataset.id);
+  ({ posts:loadPosts, books:loadBooks, messages:loadInbox, subscribers:loadSubs, media:loadMedia })[t]();
 });
 
 boot();

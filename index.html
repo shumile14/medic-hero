@@ -215,7 +215,7 @@ footer{margin-top:72px;background:var(--marquee);color:var(--ink)}
 
 <footer>
   <div class="wrap sub" id="subscribe">
-    <div><h2>A new episode every week.</h2><p>Medicine, travel, business, fragrance and whatever mad thing happened in between. One email when it drops.</p></div>
+    <div><h2 id="subTitle">A new episode every week.</h2><p id="subText">Medicine, travel, business, fragrance and whatever mad thing happened in between. One email when it drops.</p></div>
     <form id="subForm">
       <label for="subEmail" style="grid-column:1/-1">Your email</label>
       <input id="subEmail" type="email" placeholder="you@example.com" required>
@@ -223,16 +223,17 @@ footer{margin-top:72px;background:var(--marquee);color:var(--ink)}
       <p class="msg" id="subMsg" role="status"></p>
     </form>
   </div>
-  <div class="wrap foot"><span>Medic Hero, written and filmed by Shumile Chishty</span><span>Season 1, 2026 <a href="admin.html" style="margin-left:14px">Admin</a></span></div>
+  <div class="wrap foot"><span>Medic Hero, written and filmed by Shumile Chishty</span><span id="socials" style="display:flex;gap:14px;flex-wrap:wrap"></span><span>Season 1, 2026 <a href="admin.html" style="margin-left:14px">Admin</a></span></div>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="site-defaults.js"></script>
 <script>
 const SB_URL = "https://eilldlbssclhcooapxmt.supabase.co";
 const SB_KEY = "sb_publishable_tViO-C9zdgKKgljn9vRkQg_TR3ZVqLQ";
 let sb = null; try { sb = window.supabase.createClient(SB_URL, SB_KEY); } catch(e) {}
 const CHANNEL_URL = "https://www.youtube.com/results?search_query=Medic+Hero"; // swap for the real channel link
-const EMAIL = "officialmedichero@gmail.com";
+let SITE = JSON.parse(JSON.stringify(window.SITE_DEFAULTS));
 
 const G = {
   episode:{name:"Weekly Episode",c:"#2B3BFF",on:"#FFFFFF"},
@@ -354,21 +355,8 @@ let BOOKS = [
  {genre:"business",title:"PSA pass notes",tag:"PDF e-book",text:"Prescribing Safety Assessment: the question types and how to tackle each one."}
 ];
 
-const VIDEOS = [
- {genre:"travel",title:"Four countries, one emergency",state:"In planning",text:"The travel documentary: UK, Spain, Egypt and the UAE."},
- {genre:"medicine",title:"The Weight of Life",state:"Short film",text:"A two-minute film from my obstetrics and gynaecology placement."},
- {genre:"videography",title:"Cardiac arrest",state:"In planning",text:"A cinematic short about the first minutes that matter."},
- {genre:"episode",title:"Day in the life",state:"Series",text:"Final-year medicine, start to finish."}
-];
-
-const TRACKS = [
- {genre:"languages",title:"Levantine Arabic",text:"One-year speaking goal, started October 2026.",now:2,of:12,unit:"months"},
- {genre:"business",title:"Stack Method books",text:"Spanish, Urdu and two Arabic dialects done. French and German next.",now:4,of:6,unit:"books"},
- {genre:"medicine",title:"UKMLA revision",text:"Sample figure. Swap in your real progress.",now:40,of:100,unit:"percent"}
-];
-
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const safeUrl = u => /^https:\/\/[\w.\-\/%~:?=&+#]+$/.test(u || "") ? u : "";
+const safeUrl = u => /^https:\/\/[\w.\-\/%~:?=&+#@,!]+$/.test(u || "") ? u : "";
 const niceDate = d => { const t = new Date(d + "T12:00:00"); return isNaN(t) ? "" : t.toLocaleDateString("en-GB", {day:"numeric", month:"short", year:"numeric"}); };
 function fromRow(r){
   const scenes = String(r.body || "").split(/\n\s*\n/).map(b => b.trim()).filter(Boolean).map(b => {
@@ -388,17 +376,23 @@ function fromRow(r){
   const cover = safeUrl(r.cover_url);
   if(cover) scenes.unshift({img:{src:cover, cap:""}});
   return {id:String(r.slug).replace(/[^a-z0-9-]/g, ""), genre:G[r.genre] ? r.genre : "episode", ep:r.genre === "episode" && r.ep ? r.ep : undefined,
-    title:esc(r.title), blurb:esc(r.blurb), date:niceDate(r.date), mins:r.mins || 1, cover, credits, scenes};
+    featured:!!r.featured, title:esc(r.title), blurb:esc(r.blurb), date:niceDate(r.date), mins:r.mins || 1, cover, credits, scenes};
 }
 const bookRow = r => ({genre:G[r.genre] ? r.genre : "medicine", title:esc(r.title), tag:"PDF e-book", text:esc(r.blurb), price:esc(r.price), buy:safeUrl(r.buy_url), file:safeUrl(r.file_url)});
-let live = false;
+let live = false, seen = false;
+function applySite(v){
+  ["tagline","aboutLede","aboutText","channelUrl","email","subTitle","subText"].forEach(k => { if(typeof v[k] === "string" && v[k].trim()) SITE[k] = v[k]; });
+  ["now","tracks","badges","ventures","videos","socials"].forEach(k => { if(Array.isArray(v[k])) SITE[k] = v[k]; });
+}
 async function load(){
   if(!sb) return;
   try{
-    const [p, b] = await Promise.all([
-      sb.from("posts").select("*").eq("published", true).order("date", {ascending:false}).order("created_at", {ascending:false}),
-      sb.from("books").select("*").eq("published", true).order("sort").order("created_at")
+    const [p, b, st] = await Promise.all([
+      sb.from("posts").select("*").eq("published", true).lte("date", new Date().toLocaleDateString("en-CA")).order("date", {ascending:false}).order("created_at", {ascending:false}),
+      sb.from("books").select("*").eq("published", true).order("sort").order("created_at"),
+      sb.from("settings").select("value").eq("key", "site").maybeSingle()
     ]);
+    if(st.data && st.data.value) applySite(st.data.value);
     if(p.data && p.data.length){ POSTS = p.data.map(fromRow); live = true; }
     if(b.data && b.data.length){ BOOKS = b.data.map(bookRow); }
   }catch(e){}
@@ -449,21 +443,18 @@ function wallSection(title, sub){
     <label class="search" for="q">Search posts<input id="q" type="search" placeholder="Try hotel, oud, trauma"></label>
     <div id="filterHost">${filterBar("")}</div><div class="wall" id="wall">${wall()}</div></section>`;
 }
-const nowAndProgress = () => `<section class="wrap"><div class="head"><h2>Right now</h2><p>What I'm on this week.</p></div>
-        <dl class="now">
-          <div><dt>Studying</dt><dd>Final-year medicine, UKMLA on the way</dd></div>
-          <div><dt>Learning</dt><dd>Levantine Arabic, month two</dd></div>
-          <div><dt>Building</dt><dd>French and German Stack Method books</dd></div>
-          <div><dt>Wearing</dt><dd>A dark oud, two sprays</dd></div>
-        </dl></section>
-      <section class="wrap"><div class="head"><h2>Progress</h2><p>I said I'd do these things. Here's where they're at.</p></div>
-        <div class="tracks">${TRACKS.map(t=>`<div class="track" style="${style(t.genre)}"><h3>${t.title}</h3><p>${t.text}</p>
-          <div class="meter" role="img" aria-label="${t.now} of ${t.of} ${t.unit}"><b style="width:${t.now/t.of*100}%"></b></div>
-          <span class="fig">${t.unit==="percent" ? t.now+"%" : t.now+" of "+t.of+" "+t.unit}</span></div>`).join("")}</div></section>`;
+const nowAndProgress = () => `${SITE.now.length ? `<section class="wrap"><div class="head"><h2>Right now</h2><p>What I'm on this week.</p></div>
+        <dl class="now">${SITE.now.map(n => `<div><dt>${esc(n.label)}</dt><dd>${esc(n.value)}</dd></div>`).join("")}</dl></section>` : ""}
+      ${SITE.tracks.length ? `<section class="wrap"><div class="head"><h2>Progress</h2><p>I said I'd do these things. Here's where they're at.</p></div>
+        <div class="tracks">${SITE.tracks.map(t => { const now = Number(t.now) || 0, of = Math.max(1, Number(t.of) || 1), g = G[t.genre] ? t.genre : "episode";
+          return `<div class="track" style="${style(g)}"><h3>${esc(t.title)}</h3><p>${esc(t.text)}</p>
+          <div class="meter" role="img" aria-label="${now} of ${of} ${esc(t.unit)}"><b style="width:${Math.min(100, now / of * 100)}%"></b></div>
+          <span class="fig">${t.unit === "percent" ? now + "%" : now + " of " + of + " " + esc(t.unit)}</span></div>`; }).join("")}</div></section>` : ""}`;
 
+const hero = () => POSTS.find(p => p.featured) || POSTS[0];
 const pages = {
   home(){
-    const p = POSTS[0];
+    const p = hero(), rest = POSTS.filter(x => x !== p).slice(0, 4);
     return `<div class="wrap">
       <div class="screen play" style="${style(p.genre)}">
         <div class="bar"><span>Medic Hero presents</span><em>${epLabel(p)}</em></div>
@@ -471,13 +462,13 @@ const pages = {
           ${p.ep ? `<div class="ghost-num" aria-hidden="true">${p.ep}</div>` : ""}
           <div class="chips"><span class="chip light">Now showing</span><span class="chip">${p.mins} min read</span></div>
           <h1>${p.title}</h1>
-          <p class="lede">${p.blurb} A weekly series about medicine, business, travel and everything in between, written by Shumile Chishty.</p>
+          <p class="lede">${p.blurb} ${esc(SITE.tagline)}</p>
           <div class="actions"><a class="btn pop" href="#post-${p.id}">Read this episode</a><a class="btn ghost" href="#blog">See every episode</a></div>
         </div>
         <div class="bar"><span>${p.date}</span><em>A blog you read like a film</em></div>
       </div></div>
-      ${POSTS.length > 1 ? `<section class="wrap"><div class="head"><h2>Latest</h2><p>The newest posts. Every post is a poster.</p><a class="btn" href="#blog">See every episode</a></div>
-        <div class="wall">${POSTS.slice(1,5).map(poster).join("")}</div></section>` : ""}
+      ${rest.length ? `<section class="wrap"><div class="head"><h2>Latest</h2><p>The newest posts. Every post is a poster.</p><a class="btn" href="#blog">See every episode</a></div>
+        <div class="wall">${rest.map(poster).join("")}</div></section>` : ""}
       <section class="wrap"><div class="head"><h2>From the bookshelf</h2><p>Revision e-books I'm writing for medical students.</p><a class="btn" href="#shop">See all e-books</a></div>
         <div class="shelf">${BOOKS.slice(0,3).map(book).join("")}</div></section>`;
   },
@@ -495,39 +486,34 @@ const pages = {
     <section class="wrap"><div class="shelf">${BOOKS.map(book).join("")}</div></section>`;
   },
   watch(){
+    const ch = safeUrl(SITE.channelUrl) || CHANNEL_URL;
     return `<div class="wrap"><div class="screen" style="${style("videography")}"><div class="screen-body">
       <div class="chips"><span class="chip light">YouTube</span></div>
       <h1>Watch Medic Hero</h1><p class="lede">Films, documentaries and days in the life. Every video lives on the channel, and each one gets its story told here.</p>
-      <div class="actions"><a class="btn pop" href="${CHANNEL_URL}" target="_blank" rel="noopener">Open the YouTube channel</a></div>
+      <div class="actions"><a class="btn pop" href="${ch}" target="_blank" rel="noopener">Open the YouTube channel</a></div>
     </div></div></div>
-    <section class="wrap"><div class="head"><h2>On the slate</h2><p>What's out and what's being made.</p></div>
-      <div class="reel">${VIDEOS.map(v=>`<a class="vid" href="${CHANNEL_URL}" target="_blank" rel="noopener" style="${style(v.genre)}">
-        <div class="thumb"><h3>${v.title}</h3></div>
-        <div class="chips"><span class="chip">${v.state}</span></div><p>${v.text}</p></a>`).join("")}</div></section>`;
+    ${SITE.videos.length ? `<section class="wrap"><div class="head"><h2>On the slate</h2><p>What's out and what's being made.</p></div>
+      <div class="reel">${SITE.videos.map(v => `<a class="vid" href="${safeUrl(v.url) || ch}" target="_blank" rel="noopener" style="${style(G[v.genre] ? v.genre : "videography")}">
+        <div class="thumb"><h3>${esc(v.title)}</h3></div>
+        ${v.state ? `<div class="chips"><span class="chip">${esc(v.state)}</span></div>` : ""}<p>${esc(v.text)}</p></a>`).join("")}</div></section>` : ""}`;
   },
   about(){
     return `<div class="wrap"><div class="screen" style="${style("unique")}"><div class="screen-body">
       <div class="chips"><span class="chip">The cast</span></div>
-      <h1>Shumile Chishty</h1><p class="lede">Final-year medical student, founder, writer and filmmaker. Born in Sheffield, based in Lincoln.</p>
+      <h1>Shumile Chishty</h1><p class="lede">${esc(SITE.aboutLede)}</p>
     </div></div></div>
     <section class="wrap two">
       <div class="prose">
         <h2 style="font-size:40px">The short version</h2>
-        <p>I'm in my final year of medicine at the University of Nottingham's Lincoln Medical School, heading for a career in major trauma. I founded our Emergency Medicine Society and I coordinate a Community First Responder scheme in Lincoln with LIVES and East Midlands Ambulance Service.</p>
-        <p>Outside the hospital I build things. Medic Hero is where I film and write. I also run a scrubs brand, a language-book company and a few other ideas that started as notes on my phone.</p>
-        <p>I speak Urdu, I'm learning Levantine Arabic, I collect fragrances, and I'll try nearly anything once: magic, art, photography, a new country.</p>
-        <div class="badges"><span class="chip">Witty Scholar</span><span class="chip">Ingenuity Impact winner</span><span class="chip">Growth Champion of the Year</span></div>
+        ${String(SITE.aboutText).split(/\n\s*\n/).filter(x => x.trim()).map(x => `<p>${esc(x.trim())}</p>`).join("")}
+        <div class="badges">${SITE.badges.map(b => `<span class="chip">${esc(b)}</span>`).join("")}</div>
       </div>
-      <div class="prose">
+      ${SITE.ventures.length ? `<div class="prose">
         <h2 style="font-size:40px">The businesses</h2>
-        <div class="ventures">
-          <a href="https://axxonscrubs.store" target="_blank" rel="noopener"><b>Axxon Scrubs</b><span>UK medical apparel</span></a>
-          <div><b>The Stack Method</b><span>Language books built on the 1,000 words people use most</span></div>
-          <div><b>Axxon Health</b><span>Health technology</span></div>
-          <div><b>Wondrop</b><span>Gadgets and tools for students</span></div>
-          <div><b>Medic Hero</b><span>This site, and the YouTube channel</span></div>
-        </div>
-      </div>
+        <div class="ventures">${SITE.ventures.map(v => safeUrl(v.url)
+          ? `<a href="${v.url}" target="_blank" rel="noopener"><b>${esc(v.name)}</b><span>${esc(v.text)}</span></a>`
+          : `<div><b>${esc(v.name)}</b><span>${esc(v.text)}</span></div>`).join("")}</div>
+      </div>` : ""}
     </section>${nowAndProgress()}`;
   },
   contact(){
@@ -536,13 +522,14 @@ const pages = {
       <h1>Say hello</h1><p class="lede">Collabs, sponsorships, speaking, or a question about medicine. I read everything.</p>
     </div></div></div>
     <section class="wrap two">
-      <div class="prose"><h2 style="font-size:40px">Email me</h2><p class="mail">${EMAIL}</p>
+      <div class="prose"><h2 style="font-size:40px">Email me</h2><p class="mail">${esc(SITE.email)}</p>
         <p>Brands and sponsors: tell me what you're making and who it's for. Students: ask away.</p></div>
       <form id="contactForm">
-        <label for="cName">Your name<input id="cName" required></label>
+        <label for="cName">Your name<input id="cName" required maxlength="80"></label>
+        <label for="cEmail">Your email<input id="cEmail" type="email" required maxlength="120"></label>
         <label for="cWhy">What's it about?<select id="cWhy"><option>Collab or sponsorship</option><option>Speaking or teaching</option><option>E-books</option><option>Just saying hello</option></select></label>
-        <label for="cMsg">Message<textarea id="cMsg" required></textarea></label>
-        <button class="btn" type="submit">Open in my email app</button>
+        <label for="cMsg">Message<textarea id="cMsg" required maxlength="3000"></textarea></label>
+        <button class="btn" type="submit">Send message</button>
         <p class="msg" id="cOut" role="status"></p>
       </form>
     </section>`;
@@ -598,7 +585,16 @@ function render(){
   document.querySelectorAll("[data-nav]").forEach(a => a.dataset.nav===name ? a.setAttribute("aria-current","page") : a.removeAttribute("aria-current"));
   window.scrollTo(0,0);
   document.querySelector(".preview").hidden = live;
-  if(sb) sb.from("views").insert({path:(isPost ? h : name).slice(0, 70)}).then(() => {}, () => {});
+  paintFooter();
+  if(sb){
+    let ref = ""; try{ const r = document.referrer && new URL(document.referrer).hostname; if(r && r !== location.hostname) ref = r.replace(/^www\./, "").slice(0, 60); }catch(e){}
+    sb.from("views").insert({path:(isPost ? h : name).slice(0, 70), entry:!seen, ref:seen ? "" : ref, device:innerWidth < 700 ? "mobile" : "desktop"}).then(() => {}, () => {});
+    seen = true;
+  }
+}
+function paintFooter(){
+  $("#subTitle").textContent = SITE.subTitle; $("#subText").textContent = SITE.subText;
+  $("#socials").innerHTML = SITE.socials.filter(x => safeUrl(x.url)).map(x => `<a href="${x.url}" target="_blank" rel="noopener">${esc(x.name)}</a>`).join("");
 }
 function focusSub(){ $("#subscribe").scrollIntoView(); $("#subEmail").focus({preventScroll:true}); }
 
@@ -619,9 +615,13 @@ document.addEventListener("submit", e => {
     });
   }
   if(e.target.id==="contactForm"){
-    const subject = encodeURIComponent($("#cWhy").value + " from " + $("#cName").value);
-    const body = encodeURIComponent($("#cMsg").value);
-    $("#cOut").innerHTML = `<a href="mailto:${EMAIL}?subject=${subject}&body=${body}">Open your email app with this message</a>. If nothing opens, email ${EMAIL} directly.`;
+    const out = $("#cOut"), form = e.target, row = {name:$("#cName").value.trim(), email:$("#cEmail").value.trim(), topic:$("#cWhy").value, body:$("#cMsg").value.trim()};
+    if(!sb){ out.textContent = "Messages aren't working right now. Email " + SITE.email + " instead."; return; }
+    out.textContent = "Sending...";
+    sb.from("messages").insert(row).then(({error}) => {
+      out.textContent = error ? "That didn't send. Email " + SITE.email + " instead." : "Message sent. I'll reply by email.";
+      if(!error) form.reset();
+    });
   }
 });
 document.addEventListener("input", e => { if(e.target.id==="q"){ curQ = e.target.value; $("#wall").innerHTML = wall(); } });
