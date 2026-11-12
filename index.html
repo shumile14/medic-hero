@@ -134,6 +134,9 @@ section{padding:56px 0 0}
 .vid p{font-family:var(--read);color:var(--ink-soft);font-size:17px}
 
 /* post */
+.back{display:inline-block;margin-top:18px;font-weight:700}
+.back + .screen{margin-top:12px}
+.search{max-width:420px;margin-bottom:16px}
 .titlecard h1{font-size:clamp(44px,8vw,112px);max-width:15ch}
 .scenes{max-width:760px;margin:0 auto;padding:44px 20px 0;display:grid;gap:30px}
 .scenes p{font-family:var(--read);font-size:21px;line-height:1.6}
@@ -382,21 +385,36 @@ const poster = p => `<a class="poster" href="#post-${p.id}" style="${style(p.gen
   ${motif(p)}
   <div class="bottom"><h3>${p.title}</h3><small>${p.blurb}</small></div></a>`;
 
-function wall(filter){
-  const list = POSTS.filter(p => !filter || p.genre===filter);
+let curF = "", curQ = "";
+function wall(){
+  const q = curQ.trim().toLowerCase();
+  const list = POSTS.filter(p => (!curF || p.genre===curF) && (!q || (p.title+" "+p.blurb+" "+G[p.genre].name).toLowerCase().includes(q)));
   return list.length ? list.map(poster).join("") :
-    `<p class="empty">Nothing in ${G[filter].name} yet. The first one is on its way.</p>`;
+    `<p class="empty">Nothing matches that. Try another word, or pick a different genre.</p>`;
 }
 function filterBar(active){
   return `<div class="filter" role="group" aria-label="Filter by genre">
     <button type="button" data-f="" aria-pressed="${!active}">Everything</button>
-    ${Object.entries(G).map(([k,g])=>`<button type="button" data-f="${k}" aria-pressed="${active===k}" style="--g:${g.c}"><i></i>${g.name}</button>`).join("")}
+    ${Object.entries(G).filter(([k])=>POSTS.some(p=>p.genre===k)).map(([k,g])=>`<button type="button" data-f="${k}" aria-pressed="${active===k}" style="--g:${g.c}"><i></i>${g.name}</button>`).join("")}
   </div>`;
 }
 function wallSection(title, sub){
+  curF = ""; curQ = "";
   return `<section class="wrap"><div class="head"><h2>${title}</h2><p>${sub}</p></div>
-    <div id="filterHost">${filterBar("")}</div><div class="wall" id="wall">${wall("")}</div></section>`;
+    <label class="search" for="q">Search posts<input id="q" type="search" placeholder="Try hotel, oud, trauma"></label>
+    <div id="filterHost">${filterBar("")}</div><div class="wall" id="wall">${wall()}</div></section>`;
 }
+const nowAndProgress = () => `<section class="wrap"><div class="head"><h2>Right now</h2><p>What I'm on this week.</p></div>
+        <dl class="now">
+          <div><dt>Studying</dt><dd>Final-year medicine, UKMLA on the way</dd></div>
+          <div><dt>Learning</dt><dd>Levantine Arabic, month two</dd></div>
+          <div><dt>Building</dt><dd>French and German Stack Method books</dd></div>
+          <div><dt>Wearing</dt><dd>A dark oud, two sprays</dd></div>
+        </dl></section>
+      <section class="wrap"><div class="head"><h2>Progress</h2><p>I said I'd do these things. Here's where they're at.</p></div>
+        <div class="tracks">${TRACKS.map(t=>`<div class="track" style="${style(t.genre)}"><h3>${t.title}</h3><p>${t.text}</p>
+          <div class="meter" role="img" aria-label="${t.now} of ${t.of} ${t.unit}"><b style="width:${t.now/t.of*100}%"></b></div>
+          <span class="fig">${t.unit==="percent" ? t.now+"%" : t.now+" of "+t.of+" "+t.unit}</span></div>`).join("")}</div></section>`;
 
 const pages = {
   home(){
@@ -413,18 +431,8 @@ const pages = {
         </div>
         <div class="bar"><span>${p.date}</span><em>A blog you read like a film</em></div>
       </div></div>
-      <section class="wrap"><div class="head"><h2>Right now</h2><p>What I'm on this week.</p></div>
-        <dl class="now">
-          <div><dt>Studying</dt><dd>Final-year medicine, UKMLA on the way</dd></div>
-          <div><dt>Learning</dt><dd>Levantine Arabic, month two</dd></div>
-          <div><dt>Building</dt><dd>French and German Stack Method books</dd></div>
-          <div><dt>Wearing</dt><dd>A dark oud, two sprays</dd></div>
-        </dl></section>
-      ${wallSection("The poster wall","Every post is a poster. Pick a genre, or just pick a colour.")}
-      <section class="wrap"><div class="head"><h2>Progress</h2><p>I said I'd do these things. Here's where they're at.</p></div>
-        <div class="tracks">${TRACKS.map(t=>`<div class="track" style="${style(t.genre)}"><h3>${t.title}</h3><p>${t.text}</p>
-          <div class="meter" role="img" aria-label="${t.now} of ${t.of} ${t.unit}"><b style="width:${t.now/t.of*100}%"></b></div>
-          <span class="fig">${t.unit==="percent" ? t.now+"%" : t.now+" of "+t.of+" "+t.unit}</span></div>`).join("")}</div></section>
+      <section class="wrap"><div class="head"><h2>Latest</h2><p>The newest four. Every post is a poster.</p><a class="btn" href="#blog">See every episode</a></div>
+        <div class="wall">${POSTS.slice(1,5).map(poster).join("")}</div></section>
       <section class="wrap"><div class="head"><h2>From the bookshelf</h2><p>Revision e-books I'm writing for medical students.</p><a class="btn" href="#shop">See all e-books</a></div>
         <div class="shelf">${BOOKS.slice(0,3).map(book).join("")}</div></section>`;
   },
@@ -475,7 +483,7 @@ const pages = {
           <div><b>Medic Hero</b><span>This site, and the YouTube channel</span></div>
         </div>
       </div>
-    </section>`;
+    </section>${nowAndProgress()}`;
   },
   contact(){
     return `<div class="wrap"><div class="screen" style="${style("travel")}"><div class="screen-body">
@@ -516,7 +524,7 @@ function postPage(id){
   const i = POSTS.findIndex(p=>p.id===id); if(i<0) return pages.blog();
   const p = POSTS[i], next = POSTS[(i+1)%POSTS.length];
   return `<article style="${style(p.genre)}">
-    <div class="wrap"><div class="screen titlecard play">
+    <div class="wrap"><a class="back" href="#blog">Back to all episodes</a><div class="screen titlecard play">
       <div class="bar"><span>Medic Hero presents</span><em>${epLabel(p)}</em></div>
       <div class="screen-body">
         ${p.ep?`<div class="ghost-num" aria-hidden="true">${p.ep}</div>`:""}
@@ -545,7 +553,7 @@ function focusSub(){ $("#subscribe").scrollIntoView(); $("#subEmail").focus({pre
 
 document.addEventListener("click", e => {
   const f = e.target.closest("[data-f]");
-  if(f){ const k = f.dataset.f; $("#filterHost").innerHTML = filterBar(k); $("#wall").innerHTML = wall(k); return; }
+  if(f){ curF = f.dataset.f; $("#filterHost").innerHTML = filterBar(curF); $("#wall").innerHTML = wall(); return; }
   if(e.target.closest("[data-sub]")){ e.preventDefault(); focusSub(); }
 });
 document.addEventListener("submit", e => {
@@ -559,6 +567,7 @@ document.addEventListener("submit", e => {
     $("#cOut").innerHTML = `<a href="mailto:${EMAIL}?subject=${subject}&body=${body}">Open your email app with this message</a>. If nothing opens, email ${EMAIL} directly.`;
   }
 });
+document.addEventListener("input", e => { if(e.target.id==="q"){ curQ = e.target.value; $("#wall").innerHTML = wall(); } });
 window.addEventListener("hashchange", render);
 render();
 </script>
