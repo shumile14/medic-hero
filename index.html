@@ -123,6 +123,7 @@ section{padding:56px 0 0}
 /* shelf (shop) */
 .shelf{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:22px}
 .book{display:flex;flex-direction:column;gap:12px}
+.cover.pic{padding:0;overflow:hidden}.cover.pic img{width:100%;height:100%;object-fit:cover;object-position:top;display:block}
 .cover{aspect-ratio:3/4;border-radius:6px 14px 14px 6px;background:var(--g);color:var(--on);padding:22px 20px 20px 30px;display:flex;flex-direction:column;justify-content:space-between;position:relative;box-shadow:10px 10px 0 var(--ink)}
 .cover::before{content:"";position:absolute;left:12px;top:0;bottom:0;width:3px;background:rgba(15,14,36,.28)}
 .cover h3{font-size:34px}
@@ -364,20 +365,20 @@ let POSTS = [
 ];
 
 let BOOKS = [
- {genre:"medicine",title:"UKMLA Mnemonics: the complete set (all 13)",tag:"PDF e-book",buy:"https://payhip.com/b/JOFXk",price:"£99",text:"All thirteen booklets in one download: 861 memory aids plus the examination routines. Saves £31 on buying them one by one."},
- {genre:"medicine",title:"UKMLA Mnemonics 1 · Medicine Part 1",tag:"PDF e-book",buy:"https://payhip.com/b/3CnRw",price:"£10",text:"Heart, lungs, gut, liver, kidneys and hormones. 165 memory aids, 89 pages."},
- {genre:"episode",title:"UKMLA Mnemonics 2 · Medicine Part 2",tag:"PDF e-book",buy:"https://payhip.com/b/BgVIU",price:"£10",text:"Brain and nerves, blood, cancer, infection, joints and older people. 128 memory aids, 65 pages."},
- {genre:"business",title:"UKMLA Mnemonics 3 · Surgery",tag:"PDF e-book",buy:"https://payhip.com/b/FJYmU",price:"£10",text:"The abdomen, perioperative care and anaesthetics, vascular, urology, breast and orthopaedics. 81 memory aids."},
- {genre:"unique",title:"UKMLA Mnemonics 4 · Obstetrics and Gynaecology",tag:"PDF e-book",buy:"https://payhip.com/b/zhqak",price:"£10",text:"Pregnancy, labour, early pregnancy, gynaecology, sexual health and contraception. 77 memory aids."},
- {genre:"travel",title:"UKMLA Mnemonics 5 · Paediatrics",tag:"PDF e-book",buy:"https://payhip.com/b/0XY9w",price:"£10",text:"Newborns, breathing and hearts, infection, fluids and kidneys, development and genetics. 78 memory aids."},
- {genre:"fragrance",title:"UKMLA Mnemonics 6 · Psychiatry",tag:"PDF e-book",buy:"https://payhip.com/b/2sF1m",price:"£10",text:"Assessment and the law, mood, anxiety, psychosis, eating, substances and neurodevelopment. 58 memory aids."},
- {genre:"reviews",title:"UKMLA Mnemonics 7 · Ear, Nose and Throat",tag:"PDF e-book",buy:"https://payhip.com/b/VmbAX",price:"£10",text:"Ears and balance, nose and throat, and lumps in the neck. 31 memory aids."},
- {genre:"languages",title:"UKMLA Mnemonics 8 · Ophthalmology",tag:"PDF e-book",buy:"https://payhip.com/b/g0u6D",price:"£10",text:"The red eye, loss of vision, and fields, pupils and eye movements. 38 memory aids."},
- {genre:"art",title:"UKMLA Mnemonics 9 · Dermatology",tag:"PDF e-book",buy:"https://payhip.com/b/HkY6C",price:"£10",text:"Rashes, infections and drug reactions, lumps, skin cancers, burns and ulcers. 41 memory aids."},
- {genre:"videography",title:"UKMLA Mnemonics 10 · Emergency and Prescribing",tag:"PDF e-book",buy:"https://payhip.com/b/Zdzy0",price:"£10",text:"Resuscitation, the acute take, poisoning and safe prescribing. 83 memory aids."},
- {genre:"magic",title:"UKMLA Mnemonics 11 · Presentations",tag:"PDF e-book",buy:"https://payhip.com/b/gQlv7",price:"£10",text:"Differential diagnosis mnemonics for the symptoms patients walk in with. 40 memory aids."},
- {genre:"photography",title:"UKMLA Mnemonics 12 · Interpretation",tag:"PDF e-book",buy:"https://payhip.com/b/Fo3XU",price:"£10",text:"ECGs, chest X-rays, blood gases, blood tests, urine and body fluids, with drawn examples. 41 memory aids."},
- {genre:"medicine",title:"UKMLA Mnemonics 13 · Examination and Signs",tag:"PDF e-book",buy:"https://payhip.com/b/gj0B4",price:"£10",text:"Step-by-step bedside examination routines for the CPSA, then the signs to find. 65 memory aids."}
+ {genre:"medicine",title:"UKMLA Mnemonics: the complete set (all 13)",tag:"PDF e-book",img:"covers/ukmla-00.jpg",buy:"https://payhip.com/b/JOFXk",price:"£99",text:"All thirteen booklets in one download: 861 memory aids plus the examination routines. Saves £31 on buying them one by one."},
+ {genre:"medicine",title:"UKMLA Mnemonics 1 · Medicine Part 1",tag:"PDF e-book",img:"covers/ukmla-01.jpg",buy:"https://payhip.com/b/3CnRw",price:"£10",text:"Heart, lungs, gut, liver, kidneys and hormones. 165 memory aids, 89 pages."},
+ {genre:"episode",title:"UKMLA Mnemonics 2 · Medicine Part 2",tag:"PDF e-book",img:"covers/ukmla-02.jpg",buy:"https://payhip.com/b/BgVIU",price:"£10",text:"Brain and nerves, blood, cancer, infection, joints and older people. 128 memory aids, 65 pages."},
+ {genre:"business",title:"UKMLA Mnemonics 3 · Surgery",tag:"PDF e-book",img:"covers/ukmla-03.jpg",buy:"https://payhip.com/b/FJYmU",price:"£10",text:"The abdomen, perioperative care and anaesthetics, vascular, urology, breast and orthopaedics. 81 memory aids."},
+ {genre:"unique",title:"UKMLA Mnemonics 4 · Obstetrics and Gynaecology",tag:"PDF e-book",img:"covers/ukmla-04.jpg",buy:"https://payhip.com/b/zhqak",price:"£10",text:"Pregnancy, labour, early pregnancy, gynaecology, sexual health and contraception. 77 memory aids."},
+ {genre:"travel",title:"UKMLA Mnemonics 5 · Paediatrics",tag:"PDF e-book",img:"covers/ukmla-05.jpg",buy:"https://payhip.com/b/0XY9w",price:"£10",text:"Newborns, breathing and hearts, infection, fluids and kidneys, development and genetics. 78 memory aids."},
+ {genre:"fragrance",title:"UKMLA Mnemonics 6 · Psychiatry",tag:"PDF e-book",img:"covers/ukmla-06.jpg",buy:"https://payhip.com/b/2sF1m",price:"£10",text:"Assessment and the law, mood, anxiety, psychosis, eating, substances and neurodevelopment. 58 memory aids."},
+ {genre:"reviews",title:"UKMLA Mnemonics 7 · Ear, Nose and Throat",tag:"PDF e-book",img:"covers/ukmla-07.jpg",buy:"https://payhip.com/b/VmbAX",price:"£10",text:"Ears and balance, nose and throat, and lumps in the neck. 31 memory aids."},
+ {genre:"languages",title:"UKMLA Mnemonics 8 · Ophthalmology",tag:"PDF e-book",img:"covers/ukmla-08.jpg",buy:"https://payhip.com/b/g0u6D",price:"£10",text:"The red eye, loss of vision, and fields, pupils and eye movements. 38 memory aids."},
+ {genre:"art",title:"UKMLA Mnemonics 9 · Dermatology",tag:"PDF e-book",img:"covers/ukmla-09.jpg",buy:"https://payhip.com/b/HkY6C",price:"£10",text:"Rashes, infections and drug reactions, lumps, skin cancers, burns and ulcers. 41 memory aids."},
+ {genre:"videography",title:"UKMLA Mnemonics 10 · Emergency and Prescribing",tag:"PDF e-book",img:"covers/ukmla-10.jpg",buy:"https://payhip.com/b/Zdzy0",price:"£10",text:"Resuscitation, the acute take, poisoning and safe prescribing. 83 memory aids."},
+ {genre:"magic",title:"UKMLA Mnemonics 11 · Presentations",tag:"PDF e-book",img:"covers/ukmla-11.jpg",buy:"https://payhip.com/b/gQlv7",price:"£10",text:"Differential diagnosis mnemonics for the symptoms patients walk in with. 40 memory aids."},
+ {genre:"photography",title:"UKMLA Mnemonics 12 · Interpretation",tag:"PDF e-book",img:"covers/ukmla-12.jpg",buy:"https://payhip.com/b/Fo3XU",price:"£10",text:"ECGs, chest X-rays, blood gases, blood tests, urine and body fluids, with drawn examples. 41 memory aids."},
+ {genre:"medicine",title:"UKMLA Mnemonics 13 · Examination and Signs",tag:"PDF e-book",img:"covers/ukmla-13.jpg",buy:"https://payhip.com/b/gj0B4",price:"£10",text:"Step-by-step bedside examination routines for the CPSA, then the signs to find. 65 memory aids."}
 ];
 
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -402,7 +403,8 @@ function fromRow(r){
   return {id:String(r.slug).replace(/[^a-z0-9-]/g, ""), genre:G[r.genre] ? r.genre : "episode", ep:r.genre === "episode" && r.ep ? r.ep : undefined,
     featured:!!r.featured, song:typeof x.song === "string" ? x.song : "", perfume:safeUrl(x.perfume), title:esc(r.title), blurb:esc(r.blurb), date:niceDate(r.date), mins:r.mins || 1, cover, credits, scenes};
 }
-const bookRow = r => ({genre:G[r.genre] ? r.genre : "medicine", title:esc(r.title), tag:"PDF e-book", text:esc(r.blurb), price:esc(r.price), buy:safeUrl(r.buy_url), file:safeUrl(r.file_url)});
+const bookImg = t => { const m = /^UKMLA Mnemonics (\d+) /.exec(t || ""); return m && +m[1] >= 1 && +m[1] <= 13 ? "covers/ukmla-" + String(m[1]).padStart(2, "0") + ".jpg" : /^UKMLA Mnemonics: the complete set/i.test(t || "") ? "covers/ukmla-00.jpg" : ""; };
+const bookRow = r => ({img:bookImg(r.title), genre:G[r.genre] ? r.genre : "medicine", title:esc(r.title), tag:"PDF e-book", text:esc(r.blurb), price:esc(r.price), buy:safeUrl(r.buy_url), file:safeUrl(r.file_url)});
 let live = false, seen = false;
 function applySite(v){
   ["tagline","aboutLede","aboutText","channelUrl","email","subTitle","subText"].forEach(k => { if(typeof v[k] === "string" && v[k].trim()) SITE[k] = v[k]; });
@@ -561,7 +563,7 @@ const pages = {
 };
 
 function book(b){
-  return `<div class="book"><div class="cover" style="${style(b.genre)}"><span>${b.tag}</span><h3>${b.title}</h3><span>Shumile Chishty</span></div>
+  return `<div class="book">${b.img ? `<div class="cover pic" style="${style(b.genre)}"><img src="${b.img}" alt="${b.title}" loading="lazy"><h3 hidden>${b.title}</h3></div>` : `<div class="cover" style="${style(b.genre)}"><span>${b.tag}</span><h3>${b.title}</h3><span>Shumile Chishty</span></div>`}
     <p>${b.text}</p><div class="row">${
       b.buy ? `<a class="btn pop" href="${b.buy}" target="_blank" rel="noopener">Buy${b.price ? " for " + b.price : ""}</a>` :
       b.file ? `<a class="btn pop" href="${b.file}" target="_blank" rel="noopener">Download free</a>` :
