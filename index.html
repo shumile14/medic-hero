@@ -364,10 +364,20 @@ let POSTS = [
 ];
 
 let BOOKS = [
- {genre:"medicine",title:"UKMLA: the big revision guide",tag:"PDF e-book",text:"The conditions that come up most, set out the way they're asked."},
- {genre:"episode",title:"ECG made easy",tag:"PDF e-book",text:"Read any ECG in a set order, from rate and rhythm to the subtle stuff."},
- {genre:"fragrance",title:"O&G in a week",tag:"PDF e-book",text:"Obstetrics and gynaecology for finals, one topic a day."},
- {genre:"business",title:"PSA pass notes",tag:"PDF e-book",text:"Prescribing Safety Assessment: the question types and how to tackle each one."}
+ {genre:"medicine",title:"UKMLA Mnemonics: the complete set (all 13)",tag:"PDF e-book",price:"£99",text:"All thirteen booklets in one download: 861 memory aids plus the examination routines. Saves £31 on buying them one by one."},
+ {genre:"medicine",title:"UKMLA Mnemonics 1 · Medicine Part 1",tag:"PDF e-book",price:"£10",text:"Heart, lungs, gut, liver, kidneys and hormones. 165 memory aids, 89 pages."},
+ {genre:"episode",title:"UKMLA Mnemonics 2 · Medicine Part 2",tag:"PDF e-book",price:"£10",text:"Brain and nerves, blood, cancer, infection, joints and older people. 128 memory aids, 65 pages."},
+ {genre:"business",title:"UKMLA Mnemonics 3 · Surgery",tag:"PDF e-book",price:"£10",text:"The abdomen, perioperative care and anaesthetics, vascular, urology, breast and orthopaedics. 81 memory aids."},
+ {genre:"unique",title:"UKMLA Mnemonics 4 · Obstetrics and Gynaecology",tag:"PDF e-book",price:"£10",text:"Pregnancy, labour, early pregnancy, gynaecology, sexual health and contraception. 77 memory aids."},
+ {genre:"travel",title:"UKMLA Mnemonics 5 · Paediatrics",tag:"PDF e-book",price:"£10",text:"Newborns, breathing and hearts, infection, fluids and kidneys, development and genetics. 78 memory aids."},
+ {genre:"fragrance",title:"UKMLA Mnemonics 6 · Psychiatry",tag:"PDF e-book",price:"£10",text:"Assessment and the law, mood, anxiety, psychosis, eating, substances and neurodevelopment. 58 memory aids."},
+ {genre:"reviews",title:"UKMLA Mnemonics 7 · Ear, Nose and Throat",tag:"PDF e-book",price:"£10",text:"Ears and balance, nose and throat, and lumps in the neck. 31 memory aids."},
+ {genre:"languages",title:"UKMLA Mnemonics 8 · Ophthalmology",tag:"PDF e-book",price:"£10",text:"The red eye, loss of vision, and fields, pupils and eye movements. 38 memory aids."},
+ {genre:"art",title:"UKMLA Mnemonics 9 · Dermatology",tag:"PDF e-book",price:"£10",text:"Rashes, infections and drug reactions, lumps, skin cancers, burns and ulcers. 41 memory aids."},
+ {genre:"videography",title:"UKMLA Mnemonics 10 · Emergency and Prescribing",tag:"PDF e-book",price:"£10",text:"Resuscitation, the acute take, poisoning and safe prescribing. 83 memory aids."},
+ {genre:"magic",title:"UKMLA Mnemonics 11 · Presentations",tag:"PDF e-book",price:"£10",text:"Differential diagnosis mnemonics for the symptoms patients walk in with. 40 memory aids."},
+ {genre:"photography",title:"UKMLA Mnemonics 12 · Interpretation",tag:"PDF e-book",price:"£10",text:"ECGs, chest X-rays, blood gases, blood tests, urine and body fluids, with drawn examples. 41 memory aids."},
+ {genre:"medicine",title:"UKMLA Mnemonics 13 · Examination and Signs",tag:"PDF e-book",price:"£10",text:"Step-by-step bedside examination routines for the CPSA, then the signs to find. 65 memory aids."}
 ];
 
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -555,7 +565,7 @@ function book(b){
     <p>${b.text}</p><div class="row">${
       b.buy ? `<a class="btn pop" href="${b.buy}" target="_blank" rel="noopener">Buy${b.price ? " for " + b.price : ""}</a>` :
       b.file ? `<a class="btn pop" href="${b.file}" target="_blank" rel="noopener">Download free</a>` :
-      `<span class="chip">Coming soon</span><a class="btn ghost" href="#subscribe" data-sub style="padding:8px 16px">Tell me when it's out</a>`}</div></div>`;
+      `<span class="chip">${b.price ? b.price + " · coming soon" : "Coming soon"}</span><a class="btn ghost" href="#subscribe" data-sub style="padding:8px 16px">Tell me when it's out</a>`}</div></div>`;
 }
 
 function scene(s){
