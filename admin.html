@@ -179,11 +179,6 @@ form{display:grid;gap:16px}
           <label for="cSong">Spotify link for the song <small>Optional. In Spotify press Share, then Copy song link, and paste it here. Readers get a play button in the side box. A playlist or album link works too.</small><input id="cSong" type="url" maxlength="200" placeholder="https://open.spotify.com/track/..."></label>
           <p class="help">Wearing and Listening to show in a small box at the side of this post as people scroll.</p></details>
           <details><summary>Review scores (for hotel and place reviews)</summary><div class="grid" id="scoreGrid"></div></details>
-          <details><summary>Perfume notes (for fragrance posts)</summary><div class="grid">
-            <label for="nTop">Top<input id="nTop" maxlength="100"></label>
-            <label for="nHeart">Heart<input id="nHeart" maxlength="100"></label>
-            <label for="nBase">Base<input id="nBase" maxlength="100"></label>
-          </div></details>
           <label class="check" for="pPublished"><input id="pPublished" type="checkbox" checked>Show this post on the site</label>
           <label class="check" for="pFeatured"><input id="pFeatured" type="checkbox">Put this post in the big spot at the top of the home page</label>
           <div class="row"><button class="btn pop" type="submit" id="savePost">Save post</button><p class="msg" id="postMsg" role="status"></p></div>
@@ -434,7 +429,7 @@ function showPostForm(p, asCopy){
   const c = p?.credits || {}; $("#cLocation").value = c.Location || ""; $("#cWearing").value = c.Wearing || ""; $("#cListening").value = c.Listening || ""; $("#cMood").value = c.Mood || "";
   const x = p?.extras || {}, sc = x.scores || [];
   SCORE_DEFAULTS.forEach((d, i) => { $("#sk" + i).value = sc[i]?.[0] || ""; $("#sv" + i).value = sc[i]?.[1] ?? ""; });
-  $("#cSong").value = x.song || ""; $("#cPerfume").value = x.perfume || ""; $("#nTop").value = x.notes?.top || ""; $("#nHeart").value = x.notes?.heart || ""; $("#nBase").value = x.notes?.base || "";
+  $("#cSong").value = x.song || ""; $("#cPerfume").value = x.perfume || "";
   $("#pPublished").checked = editPost ? p.published : !asCopy; $("#pFeatured").checked = editPost ? !!p.featured : false;
   setCover(p?.cover_url || ""); $("#pCover").value = ""; say($("#postMsg"), asCopy ? "This is a copy. It stays hidden until you tick the box and save." : "");
   $("#pBody").dispatchEvent(new Event("input"));
@@ -477,7 +472,7 @@ $("#postForm").addEventListener("submit", async e => {
     date: $("#pDate").value, blurb: $("#pBlurb").value.trim(), body, cover_url: coverUrl || null,
     mins: Math.max(1, Math.round(body.split(/\s+/).length / 200)),
     credits: { Location:$("#cLocation").value.trim(), Wearing:$("#cWearing").value.trim(), Listening:$("#cListening").value.trim(), Mood:$("#cMood").value.trim() },
-    extras: { song, perfume, scores, notes:{ top:$("#nTop").value.trim(), heart:$("#nHeart").value.trim(), base:$("#nBase").value.trim() } },
+    extras: { song, perfume, scores },
     published: $("#pPublished").checked, featured: $("#pFeatured").checked
   };
   if(!editPost) row.slug = (title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 50) || "post") + "-" + Math.random().toString(36).slice(2, 6);

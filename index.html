@@ -156,10 +156,6 @@ section{padding:56px 0 0}
 .score output{text-align:right;font-variant-numeric:tabular-nums}
 .verdict{display:flex;justify-content:space-between;align-items:baseline;border-top:2px solid var(--ink);padding-top:14px;font-weight:800;font-size:22px}
 .verdict b{font-size:44px;font-stretch:78%}
-.notes{display:grid;gap:8px}
-.notes div{border-radius:12px;padding:14px 18px;background:var(--g);color:var(--on);display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;font-weight:700}
-.notes div:nth-child(1){width:60%;opacity:.55}.notes div:nth-child(2){width:80%;opacity:.78}.notes div:nth-child(3){width:100%}
-.notes span{font-family:var(--read);font-weight:400;font-style:italic}
 .credits{background:var(--ink);color:#fff;margin-top:56px;padding:56px 20px;text-align:center}
 .credits h2{font-size:22px;font-stretch:100%;font-weight:600;letter-spacing:0;color:var(--marquee);margin-bottom:26px}
 .credits dl{display:grid;grid-template-columns:1fr 1fr;gap:12px 18px;max-width:560px;margin:0 auto 34px;font-size:19px}
@@ -198,6 +194,10 @@ footer{margin-top:72px;background:var(--marquee);color:var(--ink)}
 .dock{position:fixed;right:16px;bottom:16px;z-index:15;width:290px;max-width:calc(100vw - 32px);display:grid;justify-items:end;gap:8px}
 .dock-tab{border:1px solid var(--line);background:var(--ink);color:#fff;border-radius:999px;padding:7px 14px;font-size:13px;font-weight:700;box-shadow:0 6px 20px rgba(15,14,36,.18)}
 .dock-tab::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--marquee);margin-right:8px}
+.dock-body[hidden]{display:none}
+.dock-tab[aria-expanded="true"]{position:absolute;top:8px;right:8px;width:26px;height:26px;padding:0;font-size:0;background:var(--wash);color:var(--ink);box-shadow:none;z-index:1}
+.dock-tab[aria-expanded="true"]::before{content:"\00d7";width:auto;height:auto;background:none;margin:0;font-size:18px;line-height:24px}
+.dock-item:first-child{padding-right:30px}
 .dock-body{width:100%;background:var(--paper);border:1px solid var(--line);border-radius:var(--r-poster);padding:12px;display:grid;gap:12px;box-shadow:0 10px 30px rgba(15,14,36,.16)}
 .dock-item>span{display:block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:4px}
 .dock-item strong{display:block;font-size:16px;line-height:1.2}
@@ -293,7 +293,6 @@ let POSTS = [
   credits:{Location:"Home, then the ward",Wearing:"The one in this review",Listening:"A slow oud instrumental",Mood:"Calm"},
   scenes:[
    {p:"I love perfume the way some people love trainers. Oud most of all: deep, woody, a little smoky. The trick is wearing it somewhere like a hospital, where loud scents are a bad idea."},
-   {notes:{name:"Sample scent profile",top:"Saffron, a touch of citrus",heart:"Rose, warm spice",base:"Oud, amber, soft musk"}},
    {p:"On a clinical day it's one spray, under the collar, an hour before I leave. By the time I'm on the ward it has settled into something only I notice."},
    {score:{title:"Scorecard",rows:[["Scent",9],["Lasting",8],["Ward-safe",7],["Value",6]],overall:"7.5"}},
    {quote:"The best perfume on a ward is the one nobody can point at."}
@@ -382,7 +381,6 @@ function fromRow(r){
     return {p:esc(b).replace(/\n/g, "<br>")};
   });
   const x = r.extras || {};
-  if(x.notes && (x.notes.top || x.notes.heart || x.notes.base)) scenes.push({notes:{name:"Scent notes", top:esc(x.notes.top), heart:esc(x.notes.heart), base:esc(x.notes.base)}});
   if(Array.isArray(x.scores) && x.scores.length){
     const rows = x.scores.map(([k, v]) => [esc(k), Math.max(0, Math.min(10, Number(v) || 0))]);
     scenes.push({score:{title:"Scorecard", rows, overall:(rows.reduce((a, r) => a + r[1], 0) / rows.length).toFixed(1)}});
@@ -567,8 +565,6 @@ function scene(s){
   if(s.frame) return `<div class="frame"><span>Photo slot: ${s.frame}</span></div>`;
   if(s.score) return `<div class="card"><h3>${s.score.title}</h3>${s.score.rows.map(([k,v])=>`<div class="score"><span>${k}</span><div class="meter"><b style="width:${v*10}%"></b></div><output>${v}/10</output></div>`).join("")}
     <div class="verdict"><span>Overall</span><b>${s.score.overall}</b></div></div>`;
-  if(s.notes) return `<div class="card"><h3>${s.notes.name}</h3><div class="notes">
-    <div>Top <span>${s.notes.top}</span></div><div>Heart <span>${s.notes.heart}</span></div><div>Base <span>${s.notes.base}</span></div></div></div>`;
   return "";
 }
 
@@ -623,7 +619,7 @@ function paintDock(p){
   setDock(open);
 }
 function setDock(open){
-  $("#dockBody").hidden = !open; $("#dockTab").setAttribute("aria-expanded", open); $("#dockTab").textContent = open ? "Hide" : "Right now";
+  $("#dockBody").hidden = !open; $("#dockTab").setAttribute("aria-expanded", open); $("#dockTab").textContent = open ? "Hide this box" : "Wearing and listening";
   const pl = $("#dockPlayer");
   if(open && pl && !pl.firstChild) pl.innerHTML = `<iframe title="Spotify player" src="${pl.dataset.src}" height="${pl.dataset.h}" loading="lazy" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>`;
 }
