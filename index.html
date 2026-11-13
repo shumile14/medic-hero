@@ -194,6 +194,17 @@ footer{margin-top:72px;background:var(--marquee);color:var(--ink)}
 .sub .msg{grid-column:1/-1}
 .foot{border-top:2px solid var(--ink);padding:18px 20px;display:flex;gap:16px;justify-content:space-between;flex-wrap:wrap;font-weight:600;font-size:15px}
 @media (max-width:820px){.frame,.shot{margin:0}.sub form{grid-template-columns:1fr}.score{grid-template-columns:86px 1fr 38px}.poster .glyph{font-size:150px}}
+/* side box: wearing and listening */
+.dock{position:fixed;right:16px;bottom:16px;z-index:15;width:290px;max-width:calc(100vw - 32px);display:grid;justify-items:end;gap:8px}
+.dock-tab{border:1px solid var(--line);background:var(--ink);color:#fff;border-radius:999px;padding:7px 14px;font-size:13px;font-weight:700;box-shadow:0 6px 20px rgba(15,14,36,.18)}
+.dock-tab::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--marquee);margin-right:8px}
+.dock-body{width:100%;background:var(--paper);border:1px solid var(--line);border-radius:var(--r-poster);padding:12px;display:grid;gap:12px;box-shadow:0 10px 30px rgba(15,14,36,.16)}
+.dock-item>span{display:block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:4px}
+.dock-item strong{display:block;font-size:16px;line-height:1.2}
+.dock-item p{font-family:var(--read);font-size:14px;color:var(--ink-soft);margin-top:2px}
+.dock-item a{display:inline-block;margin-top:4px;font-size:13px;font-weight:700;color:var(--cobalt)}
+.dock-item iframe{display:block;width:100%;border:0;border-radius:12px}
+@media print{.dock{display:none}}
 </style>
 </head>
 <body>
@@ -212,6 +223,11 @@ footer{margin-top:72px;background:var(--marquee);color:var(--ink)}
 </div></header>
 
 <main id="view"></main>
+
+<aside class="dock" id="dock" aria-label="Wearing and listening to in this post" hidden>
+  <div class="dock-body" id="dockBody"></div>
+  <button class="dock-tab" id="dockTab" type="button" aria-controls="dockBody">Right now</button>
+</aside>
 
 <footer>
   <div class="wrap sub" id="subscribe">
@@ -376,7 +392,7 @@ function fromRow(r){
   const cover = safeUrl(r.cover_url);
   if(cover) scenes.unshift({img:{src:cover, cap:""}});
   return {id:String(r.slug).replace(/[^a-z0-9-]/g, ""), genre:G[r.genre] ? r.genre : "episode", ep:r.genre === "episode" && r.ep ? r.ep : undefined,
-    featured:!!r.featured, title:esc(r.title), blurb:esc(r.blurb), date:niceDate(r.date), mins:r.mins || 1, cover, credits, scenes};
+    featured:!!r.featured, song:typeof x.song === "string" ? x.song : "", perfume:safeUrl(x.perfume), title:esc(r.title), blurb:esc(r.blurb), date:niceDate(r.date), mins:r.mins || 1, cover, credits, scenes};
 }
 const bookRow = r => ({genre:G[r.genre] ? r.genre : "medicine", title:esc(r.title), tag:"PDF e-book", text:esc(r.blurb), price:esc(r.price), buy:safeUrl(r.buy_url), file:safeUrl(r.file_url)});
 let live = false, seen = false;
@@ -585,7 +601,7 @@ function render(){
   document.querySelectorAll("[data-nav]").forEach(a => a.dataset.nav===name ? a.setAttribute("aria-current","page") : a.removeAttribute("aria-current"));
   window.scrollTo(0,0);
   document.querySelector(".preview").hidden = live;
-  paintFooter();
+  paintFooter(); paintDock(isPost && POSTS.find(p => p.id === h.slice(5)));
   if(sb){
     let ref = ""; try{ const r = document.referrer && new URL(document.referrer).hostname; if(r && r !== location.hostname) ref = r.replace(/^www\./, "").slice(0, 60); }catch(e){}
     sb.from("views").insert({path:(isPost ? h : name).slice(0, 70), entry:!seen, ref:seen ? "" : ref, device:innerWidth < 700 ? "mobile" : "desktop"}).then(() => {}, () => {});
@@ -596,6 +612,22 @@ function paintFooter(){
   $("#subTitle").textContent = SITE.subTitle; $("#subText").textContent = SITE.subText;
   $("#socials").innerHTML = SITE.socials.filter(x => safeUrl(x.url)).map(x => `<a href="${x.url}" target="_blank" rel="noopener">${esc(x.name)}</a>`).join("");
 }
+// Side box on blog posts: what was worn and played while writing that post.
+const spotify = u => { const m = /^https:\/\/open\.spotify\.com\/(?:intl-[a-z-]+\/)?(?:embed\/)?(track|playlist|album)\/([A-Za-z0-9]{10,40})/.exec(u || ""); return m ? {tall:m[1] !== "track", src:`https://open.spotify.com/embed/${m[1]}/${m[2]}`} : null; };
+function paintDock(p){
+  const d = $("#dock"), s = p && spotify(p.song), w = p && p.credits.Wearing || "", l = p && p.credits.Listening || "";
+  d.hidden = !s && !w && !l; $("#dockBody").innerHTML = ""; if(d.hidden) return;
+  $("#dockBody").innerHTML = (w ? `<div class="dock-item"><span>Wearing</span><strong>${w}</strong>${p.perfume ? `<a href="${p.perfume}" target="_blank" rel="noopener">See this perfume</a>` : ""}</div>` : "")
+    + (s || l ? `<div class="dock-item"><span>Listening to</span>${l ? `<strong>${l}</strong>` : ""}${s ? `<div id="dockPlayer" data-src="${s.src}" data-h="${s.tall ? 152 : 80}"${l ? ' style="margin-top:8px"' : ""}></div>` : ""}</div>` : "");
+  let open = innerWidth > 820; try{ const saved = localStorage.getItem("dock"); if(saved) open = saved === "open"; }catch(e){}
+  setDock(open);
+}
+function setDock(open){
+  $("#dockBody").hidden = !open; $("#dockTab").setAttribute("aria-expanded", open); $("#dockTab").textContent = open ? "Hide" : "Right now";
+  const pl = $("#dockPlayer");
+  if(open && pl && !pl.firstChild) pl.innerHTML = `<iframe title="Spotify player" src="${pl.dataset.src}" height="${pl.dataset.h}" loading="lazy" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>`;
+}
+$("#dockTab").addEventListener("click", () => { const open = $("#dockBody").hidden; setDock(open); try{ localStorage.setItem("dock", open ? "open" : "closed"); }catch(e){} });
 function focusSub(){ $("#subscribe").scrollIntoView(); $("#subEmail").focus({preventScroll:true}); }
 
 document.addEventListener("click", e => {

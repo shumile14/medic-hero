@@ -174,7 +174,10 @@ form{display:grid;gap:16px}
             <label for="cWearing">Wearing<input id="cWearing" maxlength="80"></label>
             <label for="cListening">Listening to<input id="cListening" maxlength="80"></label>
             <label for="cMood">Mood<input id="cMood" maxlength="40"></label>
-          </div></details>
+          </div>
+          <label for="cPerfume">Link to the perfume <small>Optional. Paste a link to where people can see or buy it. Shows as "See this perfume" in the side box.</small><input id="cPerfume" type="url" maxlength="300" placeholder="https://"></label>
+          <label for="cSong">Spotify link for the song <small>Optional. In Spotify press Share, then Copy song link, and paste it here. Readers get a play button in the side box. A playlist or album link works too.</small><input id="cSong" type="url" maxlength="200" placeholder="https://open.spotify.com/track/..."></label>
+          <p class="help">Wearing and Listening to show in a small box at the side of this post as people scroll.</p></details>
           <details><summary>Review scores (for hotel and place reviews)</summary><div class="grid" id="scoreGrid"></div></details>
           <details><summary>Perfume notes (for fragrance posts)</summary><div class="grid">
             <label for="nTop">Top<input id="nTop" maxlength="100"></label>
@@ -431,7 +434,7 @@ function showPostForm(p, asCopy){
   const c = p?.credits || {}; $("#cLocation").value = c.Location || ""; $("#cWearing").value = c.Wearing || ""; $("#cListening").value = c.Listening || ""; $("#cMood").value = c.Mood || "";
   const x = p?.extras || {}, sc = x.scores || [];
   SCORE_DEFAULTS.forEach((d, i) => { $("#sk" + i).value = sc[i]?.[0] || ""; $("#sv" + i).value = sc[i]?.[1] ?? ""; });
-  $("#nTop").value = x.notes?.top || ""; $("#nHeart").value = x.notes?.heart || ""; $("#nBase").value = x.notes?.base || "";
+  $("#cSong").value = x.song || ""; $("#cPerfume").value = x.perfume || ""; $("#nTop").value = x.notes?.top || ""; $("#nHeart").value = x.notes?.heart || ""; $("#nBase").value = x.notes?.base || "";
   $("#pPublished").checked = editPost ? p.published : !asCopy; $("#pFeatured").checked = editPost ? !!p.featured : false;
   setCover(p?.cover_url || ""); $("#pCover").value = ""; say($("#postMsg"), asCopy ? "This is a copy. It stays hidden until you tick the box and save." : "");
   $("#pBody").dispatchEvent(new Event("input"));
@@ -463,12 +466,18 @@ $("#postForm").addEventListener("submit", async e => {
   e.preventDefault();
   const genre = $("#pGenre").value, body = $("#pBody").value.trim(), title = $("#pTitle").value.trim();
   const scores = SCORE_DEFAULTS.map((d, i) => [$("#sk" + i).value.trim() || d, $("#sv" + i).value]).filter(r => r[1] !== "").map(r => [r[0], Number(r[1])]);
+  const song = $("#cSong").value.trim();
+  if(song && !/^https:\/\/open\.spotify\.com\/(intl-[a-z-]+\/)?(track|playlist|album)\/[A-Za-z0-9]{10,40}/.test(song))
+    return say($("#postMsg"), "That Spotify link doesn't look right. In Spotify press Share, then Copy song link, and paste that.", "bad");
+  const perfume = $("#cPerfume").value.trim();
+  if(perfume && !/^https:\/\/[\w.\-\/%~:?=&+#@,!]+$/.test(perfume))
+    return say($("#postMsg"), "That perfume link doesn't look right. Copy the full link from the page, starting with https://", "bad");
   const row = {
     title, genre, ep: genre === "episode" ? (parseInt($("#pEp").value, 10) || null) : null,
     date: $("#pDate").value, blurb: $("#pBlurb").value.trim(), body, cover_url: coverUrl || null,
     mins: Math.max(1, Math.round(body.split(/\s+/).length / 200)),
     credits: { Location:$("#cLocation").value.trim(), Wearing:$("#cWearing").value.trim(), Listening:$("#cListening").value.trim(), Mood:$("#cMood").value.trim() },
-    extras: { scores, notes:{ top:$("#nTop").value.trim(), heart:$("#nHeart").value.trim(), base:$("#nBase").value.trim() } },
+    extras: { song, perfume, scores, notes:{ top:$("#nTop").value.trim(), heart:$("#nHeart").value.trim(), base:$("#nBase").value.trim() } },
     published: $("#pPublished").checked, featured: $("#pFeatured").checked
   };
   if(!editPost) row.slug = (title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 50) || "post") + "-" + Math.random().toString(36).slice(2, 6);
